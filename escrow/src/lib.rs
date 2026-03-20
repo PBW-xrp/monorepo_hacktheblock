@@ -16,15 +16,27 @@
 #[cfg(not(target_arch = "wasm32"))]
 extern crate std;
 
+use risc0_verifier_xrpl_wasm::{Proof, risc0};
 use xrpl_wasm_stdlib::host::{Error, Result, Result::Err, Result::Ok};
 use xrpl_wasm_stdlib::{core::locator::Locator, host::get_tx_nested_field, sfield};
 
-// The RISC0 zkVM image ID for the withdrawal proof
+// The RISC0 zkVM image ID for the zkVM program
 const IMAGE_ID: [u8; 32] =
-    hex_literal::hex!("9d2b7d43ab21ab36959d3afdc7b18ef1d434447889e9636d99db15f966329320");
+    hex_literal::hex!("b25de13446f42d04bddf00660d3e0b11ca246d3badd4e016376d1424e21ca23e");
 
 #[unsafe(no_mangle)]
 pub extern "C" fn finish() -> i32 {
+    // The size of the journal will change depending on how many bytes are written using `env::commit` in the guest.
+    let journal: [u8; 4] = get_memo(0).unwrap();
+
+    // The seal will always be 256 bytes
+    let seal: [u8; 256] = get_memo(1).unwrap();
+
+    let proof = Proof::from_seal_bytes(&seal).unwrap();
+    let journal_digest = risc0::hash_journal(&journal);
+    risc0::verify(&proof, &IMAGE_ID, &journal_digest).unwrap();
+
+    // If we reach this point, the proof is valid and we can proceed with finishing the escrow.
     1
 }
 

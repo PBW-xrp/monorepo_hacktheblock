@@ -8,7 +8,7 @@ readme = "README.md"
 
 [workspace]
 resolver = "2"
-members = ["zkvm/example-proof", "escrow"]
+members = ["zkvm/example-proof", "escrow", "cli"]
 
 [workspace.dependencies]
 anyhow = "1"

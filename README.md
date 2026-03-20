@@ -1,3 +1,3 @@
+# XRPL + RISC0 Starter
 
-
-- If using xrpl.js use xrpl@4.5.0-smartescrow.4
+A repo for getting started using RISC0 proofs with Smart Escrows on XRPL
