@@ -80,6 +80,41 @@ and start the devnet with
 just start-devnet
 ```
 
+## Generating Proofs
+
+Using the provided CLI tool you can generate proofs for your zkVM guest program. There are two ways to do this:
+
+### Local Proving
+
+Generate the proof locally on your machine. This is ok for small computations only. You can expect significant proving times for anything complex.
+
+Use
+
+```shell
+just prove 11 13
+```
+
+as an example to prove you know the prime factorization of 143. 
+
+### Boundless Market
+
+For more complex proofs you can use the Boundless Market to find a powerful proving stack to generate your proof for you. This requires some setup. 
+
+You need:
+
+- An RPC URL for Base (https://mainnet.base.org/)
+- A funded wallet on Base mainnet to pay for proofs. ~$10 should be enough to test many proofs
+- A Piñata (easiest) or S3 bucket to publish the program and input data to
+    - See https://docs.boundless.network/developers/tutorials/request#storage-providers
+
+See [.env.example](./.env.example) for details.
+
+Run with:
+
+```shell
+cargo run 11 13 --proving boundless  
+```
+
 ## Writing and running tests
 
 See [the e2e tests](./tests/e2e.rs) for examples of writing automated tests against a dockerized instance of XRPL. The test harness will automatically take care of spinning up and down a docker container for each test.
