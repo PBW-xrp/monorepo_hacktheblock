@@ -7,6 +7,7 @@ use risc0_verifier_xrpl_wasm::{Proof, risc0};
 use xrpl_wasm_stdlib::host::{Error, Result, Result::Err, Result::Ok};
 use xrpl_wasm_stdlib::{core::locator::Locator, host::get_tx_nested_field, sfield};
 
+/// An escrow that can only be unlocked if the prover can demonstrate knowledge of the prime factors of 143 (11 and 13) without revealing them.
 #[unsafe(no_mangle)]
 pub extern "C" fn finish() -> i32 {
     // The size of the journal will change depending on how many bytes are written using `env::commit` in the guest.
@@ -14,6 +15,9 @@ pub extern "C" fn finish() -> i32 {
 
     // The seal will always be 256 bytes
     let seal: [u8; 256] = get_memo(1).unwrap();
+
+    let factored_number = u32::from_be_bytes(journal);
+    assert_eq!(factored_number, 143); // 11 * 13 = 143
 
     let proof = Proof::from_seal_bytes(&seal).unwrap();
     let journal_digest = risc0::hash_journal(&journal);

@@ -24,7 +24,7 @@ This repo also contains two helpful utilities
 
 - [Rust](https://rust-lang.org/tools/install/)
 - Wasm32 toolchain `rustup target add wasm32v1-none`
-- [RISC0 toolchain] https://dev.risczero.com/api/zkvm/install
+- [RISC0 toolchain](https://dev.risczero.com/api/zkvm/install)
 - [Just](https://github.com/casey/just?tab=readme-ov-file#installation)
 - [Docker](https://docs.docker.com/engine/install/)
 
@@ -50,7 +50,16 @@ A special devnet has been created for previewing smart escrows with ZK verificat
 - RPC - wss://groth5.devnet.rippletest.net:51233
 - Faucet - http://groth5-faucet.devnet.rippletest.net
 
-The easiest way to deploy to this devnet is to use the [provided web UI](https://boundless-xyz.github.io/xrpl-risc0-starter/) but you can also build your own web integrations using xrpl.js. If using XRPL.js you MUST use the version [4.5.0-smartescrow.4](https://www.npmjs.com/package/xrpl/v/4.5.0-smartescrow.4)
+The easiest way to deploy to this devnet is to use the [provided web UI](https://boundless-xyz.github.io/xrpl-risc0-starter/)!
+
+1. Connect to the groth5 devnet and generate/fund a new account
+2. Using the web UI upload your escrow binary (./target/wasm32v1-none/release/escrow.wasm) using the upload file tab
+3. Deploy an escrow using the Deploy WASM tab
+4. Generate a valid proof to finish the escrow (e.g. `just prove 13 11`) and copy the memo JSON
+5. Use the Advanced Options under Finish Escrow to submit a finish transaction with the memo
+5. If the proof is valid your escrow should finish and the recipient receive their funds
+
+You can also build your own web integrations using [xrpl.js](https://js.xrpl.org/). If using xrpl.js you MUST use the version [4.5.0-smartescrow.4](https://www.npmjs.com/package/xrpl/v/4.5.0-smartescrow.4)
 
 > [!IMPORTANT]
 > Do not try and deploy ZK smart escrows to the regular devnet it won't work.
@@ -79,3 +88,25 @@ This requires you build the docker image first with `just build-docker`.
 
 > [!NOTE]
 > The tests will automatically teardown the devnet container upon completion. If the tests are interrupted this doesn't happen. You may need to manually kill the container if you see an error like: `Bind for 0.0.0.0:5005 failed: port is already allocated`
+
+## FAQs
+
+#### Can XRPL escrows store data/state?
+
+Sort of. You can set the data field of an escrow at deployment time and read this from within the escrow code. You cannot change this data after deployment.
+
+#### Can XRPL escrows read state from other LedgerObjects?
+
+Yes. Using [xrpl-wasm-stdlib](https://crates.io/crates/xrpl-wasm-stdlib) you can call `cache_ledger_obj` to load an object from the XRPL state into the Wasm cache and then `get_ledger_obj_field` to read its fields. This uses low-level operations and is experimental at this time.
+
+#### Is it possible to a smart escrow to change the amount/recipient or do partial withdrawals
+
+No. An escrow needs its amount and recipient set at deployment time. It is then a boolean operation, an escrow either finishes and delivers all of its held funds to its recipient, or does not finish.
+
+#### Can smart escrow functionality be used in tandem with regular escrow functionality?
+
+Partially yes. In particular you can use the fields `"CancelAfter"` and `"FinishAfter"` on the deploy transaction (use the custom fields in the UI) to set XRPL timestamps for when an escrow can be cancelled or finished without requiring its finish function to execute.
+
+#### What can you prove in a zkVM?
+
+You would be amazed what is possible. Check out some examples https://github.com/risc0/risc0/tree/main/examples
