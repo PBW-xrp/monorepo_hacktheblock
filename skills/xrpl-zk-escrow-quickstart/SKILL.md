@@ -1,14 +1,3 @@
----
-name: xrpl-zk-escrow-quickstart
-description: Web UI for quickly deploying and testing XRPL Smart Escrows. No-code interface for hackathon participants to experiment before diving into Rust code.
-globs:
-  - "ui/**/*"
-  - "ui/*.html"
-  - "ui/*.css"
-  - "ui/*.js"
-alwaysApply: true
----
-
 # XRPL ZK Escrow Web UI
 
 **Start here for hackathon experimentation.** The Web UI provides a no-code interface for deploying and testing Smart Escrows without touching Rust code. Perfect for understanding the concept before building custom guest programs.

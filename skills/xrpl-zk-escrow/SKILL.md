@@ -1,15 +1,3 @@
----
-name: xrpl-zk-escrow
-description: XRPL Smart Escrow + RISC Zero zkVM hackathon starter. Covers architecture, guest programs, escrow contracts, proving, testing, and the Boundless market.
-globs:
-  - "**/*.rs"
-  - "justfile"
-  - "Cargo.toml"
-  - "*.toml"
-  - ".env*"
-alwaysApply: true
----
-
 # XRPL + RISC Zero Starter
 
 Build XRPL Smart Escrows gated by RISC Zero zkVM proofs. Prove a computation off-chain, submit the proof on-chain, and the escrow verifies it before releasing funds.

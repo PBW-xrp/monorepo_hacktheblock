@@ -2,25 +2,24 @@
 
 A starter kit for developing XRPL Smart Escrows with RISC0 proof integration
 
-## 🚀 Quick Start for AI Assistants
+# Install Prompt
 
-Copy and paste this into your AI agent to get full context:
+Copy and paste this into your AI agent to get started:
 
 ```
-I want to work on the XRPL + RISC0 starter project.
+I want to build something awesome on XRPL using ZK Smart Vaults.
 
-First, create a new repo from the template (choose one):
-- GitHub UI: Click "Use this template" at https://github.com/Boundless-xyz/xrpl-risc0-starter
-- GitHub CLI: gh repo create my-project --template Boundless-xyz/xrpl-risc0-starter --public
-- Direct clone: git clone https://github.com/Boundless-xyz/xrpl-risc0-starter.git
+First, create a new repo from the template: https://github.com/Boundless-xyz/xrpl-risc0-starter
 
-This repo demonstrates XRPL Smart Escrows gated by RISC Zero zkVM proofs. 
+This repo demonstrates XRPL Smart Escrows gated by RISC Zero zkVM proofs.
 
-Please read these skill files in order for full context:
-1. skills/xrpl-zk-escrow-quickstart/SKILL.md - **Start here** for no-code Web UI experimentation
-2. skills/xrpl-zk-escrow/SKILL.md - Full Rust development workflow for custom guest programs
+**Follow this progression:**
 
-Also read CLAUDE.md or AGENTS.md at the repo root for project conventions.
+1. **Start with Path 1** — Read `skills/xrpl-zk-escrow-quickstart/SKILL.md` and experiment with the no-code Web UI. Load pre-built examples, deploy escrows, and understand the concept.
+
+2. **Then graduate to Path 2** — Read `skills/xrpl-zk-escrow/SKILL.md` for the full Rust development workflow: write custom guest programs, build and deploy your own Wasm contracts.
+
+Also make sure to read CLAUDE.md/AGENTS.md at the repo root for specific project information.
 ```
 
 ## Overview
