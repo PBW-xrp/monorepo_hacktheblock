@@ -1,5 +1,5 @@
 ---
-name: xrpl-zk-escrow-ui
+name: xrpl-zk-escrow-quickstart
 description: Web UI for quickly deploying and testing XRPL Smart Escrows. No-code interface for hackathon participants to experiment before diving into Rust code.
 globs:
   - "ui/**/*"

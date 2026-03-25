@@ -14,7 +14,7 @@ alwaysApply: true
 
 Build XRPL Smart Escrows gated by RISC Zero zkVM proofs. Prove a computation off-chain, submit the proof on-chain, and the escrow verifies it before releasing funds.
 
-> **New to this?** Start with the [Web UI Quick Start](../xrpl-zk-escrow-ui/SKILL.md) to experiment without writing code, then return here for custom development.
+> **New to this?** Start with the [Quickstart (Web UI)](../xrpl-zk-escrow-quickstart/SKILL.md) to experiment without writing code, then return here for custom development.
 
 ## Architecture
 

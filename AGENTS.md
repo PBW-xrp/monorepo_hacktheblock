@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents when working with code in this r
 
 ## Skills Reference (Read in Order)
 
-1. **[Web UI Quick Start](skills/xrpl-zk-escrow-ui/SKILL.md)** — **Start here for hackathons.** No-code interface for deploying and testing Smart Escrows. Experiment with pre-built examples before writing Rust.
+1. **[Quickstart (Web UI)](skills/xrpl-zk-escrow-quickstart/SKILL.md)** — **Start here for hackathons.** No-code Web UI for deploying and testing Smart Escrows. Experiment with pre-built examples before writing Rust.
 2. **[ZK Escrow Development](skills/xrpl-zk-escrow/SKILL.md)** — Full Rust workflow: custom guest programs, CLI proving, escrow contracts, testing, and Boundless market.
 
 > **Hackathon Path:** Begin with the Web UI to understand the concept. Graduate to Rust development when building custom ZK-proved guest programs.

@@ -12,7 +12,7 @@ I want to work on the XRPL + RISC0 starter project at https://github.com/Boundle
 This repo demonstrates XRPL Smart Escrows gated by RISC Zero zkVM proofs. 
 
 Please read these skill files in order for full context:
-1. skills/xrpl-zk-escrow-ui/SKILL.md - Start here for no-code Web UI experimentation
+1. skills/xrpl-zk-escrow-quickstart/SKILL.md - **Start here** for no-code Web UI experimentation
 2. skills/xrpl-zk-escrow/SKILL.md - Full Rust development workflow for custom guest programs
 
 Also read CLAUDE.md or AGENTS.md at the repo root for project conventions.
