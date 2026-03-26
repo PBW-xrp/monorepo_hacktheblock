@@ -16,7 +16,7 @@ bs58 = "0.5"
 bytemuck = "1.25.0"
 serde = { version = "1.0", features = ["derive", "std"] }
 serde_json = "1"
-risc0-verifier-xrpl-wasm = { git = "https://github.com/boundless-xyz/risc0-xrpl-wasm", rev = "e2bb3d3133ff4bde8fa6537f0bbc930d69698a4b", default-features = false }
+risc0-verifier-xrpl-wasm = { version = "0.1", default-features = false }
 xrpl-wasm-stdlib = "0.8"
 
 [dev-dependencies]
