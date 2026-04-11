@@ -14,12 +14,20 @@ enum ProvingMethod {
 }
 
 #[derive(Parser)]
-#[command(about = "Prove that two numbers are prime and commit their product")]
+#[command(about = "VeraFi Black-Scholes zkVM prover — outputs journal + seal as hex for XRPL EscrowFinish Memos")]
 struct Args {
-    /// First prime number
-    a: u32,
-    /// Second prime number
-    b: u32,
+    /// Spot price (6-decimal fixed-point, e.g. 1400000 = $1.40)
+    spot: u64,
+    /// Strike price (6-decimal fixed-point, e.g. 1150000 = $1.15)
+    strike: u64,
+    /// Volatility in basis points (e.g. 4300 = 43%)
+    vol: u32,
+    /// Risk-free rate in basis points (e.g. 0 = 0%)
+    rate: u64,
+    /// Time to expiry in seconds (e.g. 2592000 = 30 days)
+    expiry: u64,
+    /// Option type: 1 = CALL, 0 = PUT
+    is_call: u8,
 
     #[arg(long, env, default_value = "local")]
     proving: ProvingMethod,
@@ -47,12 +55,24 @@ async fn main() -> Result<()> {
         hex::encode(bytemuck::cast_slice(&EXAMPLE_PROOF_ID))
     );
 
-    println!("Proving {} * {} = {} ...", args.a, args.b, args.a * args.b);
+    println!(
+        "Proving Black-Scholes: spot={} strike={} vol={}bps rate={}bps expiry={}s is_call={}",
+        args.spot, args.strike, args.vol, args.rate, args.expiry, args.is_call
+    );
 
     let (journal, seal) = match args.proving {
         ProvingMethod::Local => prove_local(args)?,
         ProvingMethod::Boundless => prove_boundless(args).await?,
     };
+
+    // Decode and display journal fields for verification
+    if journal.len() == 38 {
+        let price = u64::from_le_bytes(journal[29..37].try_into().unwrap());
+        let is_itm = journal[37];
+        println!("--- Journal decoded ---");
+        println!("  price (6-dec fixed-point): {price}  (= ${:.6})", price as f64 / 1_000_000.0);
+        println!("  is_itm: {is_itm}");
+    }
 
     println!("journal: {}", hex::encode(&journal));
     println!("seal:    {}", hex::encode(&seal));
@@ -70,7 +90,7 @@ async fn main() -> Result<()> {
       },
     ]);
 
-    println!("Memos to include in transaction:\n\n{}", memos);
+    println!("Memos to include in EscrowFinish transaction:\n\n{}", memos);
 
     Ok(())
 }
@@ -82,13 +102,17 @@ fn prove_local(args: Args) -> anyhow::Result<(Vec<u8>, Vec<u8>)> {
     );
 
     let env = ExecutorEnv::builder()
-        .write(&args.a)?
-        .write(&args.b)?
+        .write(&args.spot)?
+        .write(&args.strike)?
+        .write(&args.vol)?
+        .write(&args.rate)?
+        .write(&args.expiry)?
+        .write(&args.is_call)?
         .build()?;
 
     let receipt = default_prover()
         .prove_with_opts(env, EXAMPLE_PROOF_ELF, &ProverOpts::groth16())
-        .context("proving failed (are both inputs prime?)")?
+        .context("proving failed")?
         .receipt;
 
     let journal = receipt.journal.bytes.as_slice().to_vec();
@@ -111,8 +135,12 @@ async fn prove_boundless(args: Args) -> anyhow::Result<(Vec<u8>, Vec<u8>)> {
         .await?;
 
     let env = GuestEnv::builder()
-        .write(&args.a)?
-        .write(&args.b)?
+        .write(&args.spot)?
+        .write(&args.strike)?
+        .write(&args.vol)?
+        .write(&args.rate)?
+        .write(&args.expiry)?
+        .write(&args.is_call)?
         .build_env();
 
     // Build the request.
@@ -144,7 +172,8 @@ async fn prove_boundless(args: Args) -> anyhow::Result<(Vec<u8>, Vec<u8>)> {
         .journal()
         .ok_or(anyhow!("No journal in order"))?
         .to_vec();
-    let seal = fulfillment.seal[4..].to_vec(); // trim the selector from the start of the seal, since our guest code doesn't expect it
+    let seal = fulfillment.seal[4..].to_vec(); // trim the selector from the start of the seal
 
     Ok((journal, seal))
 }
+
