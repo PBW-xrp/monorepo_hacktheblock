@@ -1,19 +1,8 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { CheckCircle, Loader2, AlertCircle, ArrowRight } from "lucide-react";
-
-// ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
-type ConnectionState =
-  | { status: "idle" }
-  | { status: "connecting"; wallet: WalletId }
-  | { status: "connected"; wallet: WalletId; address: string }
-  | { status: "error"; wallet: WalletId; message: string };
-
-type WalletId = "otsu" | "crossmark" | "xaman";
+import { useWallet, WalletId } from "@/contexts/WalletContext";
 
 // ---------------------------------------------------------------------------
 // Wallet definitions
@@ -58,49 +47,12 @@ const WALLETS: { id: WalletId; label: string; description: string; icon: React.R
 
 // ---------------------------------------------------------------------------
 // Component
-// TODO: Replace with xrpl-connect WalletManager + <xrpl-wallet-connector>
-//       when the full integration is wired up. This is a placeholder that
-//       uses dynamic imports to connect individual wallets.
 // ---------------------------------------------------------------------------
 export default function WalletConnectPanel() {
-  const [conn, setConn] = useState<ConnectionState>({ status: "idle" });
-
-  const handleConnect = useCallback(async (walletId: WalletId) => {
-    setConn({ status: "connecting", wallet: walletId });
-
-    try {
-      if (walletId === "crossmark") {
-        const { default: sdk } = await import("@crossmarkio/sdk");
-        const result = await sdk.methods.signInAndWait();
-        const address = result?.response?.data?.address;
-        if (!address) throw new Error("Crossmark did not return an address.");
-        setConn({ status: "connected", wallet: "crossmark", address });
-
-      } else if (walletId === "otsu") {
-        // Otsu injects window.xrpl
-        const provider = (window as any).xrpl;
-        if (!provider?.isOtsu) throw new Error("Otsu Wallet extension not found. Install it first.");
-        const result = await provider.connect({ scopes: ["read", "sign", "submit"] });
-        const address = result?.address;
-        if (!address) throw new Error("Otsu did not return an address.");
-        setConn({ status: "connected", wallet: "otsu", address });
-
-      } else if (walletId === "xaman") {
-        // Xaman requires API keys — placeholder for xrpl-connect integration
-        throw new Error("Xaman integration requires xrpl-connect setup. Use Otsu or Crossmark for now.");
-      }
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Connection failed.";
-      setConn({ status: "error", wallet: walletId, message });
-    }
-  }, []);
-
-  const handleDisconnect = useCallback(() => {
-    setConn({ status: "idle" });
-  }, []);
+  const { state, connect, disconnect } = useWallet();
 
   // ── Connected ──────────────────────────────────────────────────────────────
-  if (conn.status === "connected") {
+  if (state.status === "connected") {
     return (
       <div className="glass-card p-8 flex flex-col items-center gap-5 animate-fade-in">
         <div className="w-14 h-14 rounded-full bg-brand-cyan/10 flex items-center justify-center">
@@ -108,11 +60,11 @@ export default function WalletConnectPanel() {
         </div>
         <div className="text-center">
           <p className="text-brand-text/60 text-sm mb-1">Connected via</p>
-          <p className="font-semibold text-brand-text capitalize">{conn.wallet}</p>
+          <p className="font-semibold text-brand-text capitalize">{state.wallet}</p>
         </div>
         <div className="w-full bg-white/[0.05] border border-white/[0.08] rounded-xl px-4 py-3 text-center">
           <p className="text-xs text-brand-text/40 mb-1 uppercase tracking-widest font-mono">XRPL Address</p>
-          <p className="font-mono text-brand-cyan text-sm break-all">{conn.address}</p>
+          <p className="font-mono text-brand-cyan text-sm break-all">{state.address}</p>
         </div>
         <Link
           href="/trade"
@@ -124,7 +76,7 @@ export default function WalletConnectPanel() {
           <ArrowRight className="w-4 h-4" />
         </Link>
         <button
-          onClick={handleDisconnect}
+          onClick={disconnect}
           className="text-xs text-brand-text/40 hover:text-brand-text/70 transition-colors"
         >
           Disconnect
@@ -137,14 +89,14 @@ export default function WalletConnectPanel() {
   return (
     <div className="flex flex-col gap-3">
       {WALLETS.map((w) => {
-        const isConnecting = conn.status === "connecting" && conn.wallet === w.id;
-        const isError = conn.status === "error" && conn.wallet === w.id;
+        const isConnecting = state.status === "connecting" && state.wallet === w.id;
+        const isError = state.status === "error" && state.wallet === w.id;
 
         return (
           <div key={w.id}>
             <button
-              onClick={() => handleConnect(w.id)}
-              disabled={conn.status === "connecting"}
+              onClick={() => connect(w.id)}
+              disabled={state.status === "connecting"}
               className={`
                 w-full glass-card px-5 py-4 flex items-center gap-4
                 border border-white/[0.08] rounded-2xl text-left
@@ -168,13 +120,12 @@ export default function WalletConnectPanel() {
             </button>
             {isError && (
               <p className="mt-1.5 text-xs text-red-400/80 px-2 animate-fade-in">
-                {(conn as { status: "error"; message: string }).message}
+                {(state as { status: "error"; message: string }).message}
               </p>
             )}
           </div>
         );
       })}
-
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { WalletProvider } from "@/contexts/WalletContext";
 
 export const metadata: Metadata = {
   title: "VeraFi — Verifiable Options Pricing",
@@ -21,7 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="bg-brand-bg text-brand-text antialiased">{children}</body>
+      <body className="bg-brand-bg text-brand-text antialiased">
+          <WalletProvider>{children}</WalletProvider>
+        </body>
     </html>
   );
 }
