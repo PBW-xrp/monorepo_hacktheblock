@@ -136,32 +136,47 @@ export default function WalletConnectPanel() {
   // ── Idle / connecting / error ───────────────────────────────────────────────
   return (
     <div className="flex flex-col gap-3">
-      {WALLETS.map((w) => {
+      {WALLETS.map((w, i) => {
         const isConnecting = conn.status === "connecting" && conn.wallet === w.id;
         const isError = conn.status === "error" && conn.wallet === w.id;
 
         return (
-          <div key={w.id}>
+          <div
+            key={w.id}
+            className="animate-fade-in-up"
+            style={{ animationDelay: `${i * 100}ms`, animationFillMode: "both" }}
+          >
             <button
               onClick={() => handleConnect(w.id)}
               disabled={conn.status === "connecting"}
               className={`
-                w-full glass-card px-5 py-4 flex items-center gap-4
+                relative w-full glass-card px-5 py-4 flex items-center gap-4
                 border border-white/[0.08] rounded-2xl text-left
-                transition-all duration-200
+                transition-all duration-300 group overflow-hidden
                 disabled:opacity-50 disabled:cursor-not-allowed
-                ${isError ? "border-red-500/40" : "hover:border-brand-blue/40 hover:bg-white/[0.06]"}
+                ${isError
+                  ? "border-red-500/40"
+                  : "hover:border-brand-cyan/50 hover:bg-white/[0.06] hover:shadow-[0_0_32px_rgba(0,229,255,0.18)] hover:-translate-y-0.5"}
               `}
             >
-              <div className="shrink-0">{w.icon}</div>
-              <div className="flex-1">
+              {/* Animated shimmer sweep */}
+              <div
+                className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: "linear-gradient(110deg, transparent 30%, rgba(0,229,255,0.08) 50%, transparent 70%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer 2s linear infinite",
+                }}
+              />
+              <div className="relative shrink-0 transition-transform duration-300 group-hover:scale-110">{w.icon}</div>
+              <div className="relative flex-1">
                 <p className="font-semibold text-brand-text text-sm">{w.label}</p>
                 <p className="text-xs text-brand-text/40 mt-0.5">{w.description}</p>
               </div>
-              {isConnecting && <Loader2 className="w-4 h-4 text-brand-blue animate-spin shrink-0" />}
-              {isError && <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />}
+              {isConnecting && <Loader2 className="relative w-4 h-4 text-brand-cyan animate-spin shrink-0" />}
+              {isError && <AlertCircle className="relative w-4 h-4 text-red-400 shrink-0" />}
               {!isConnecting && !isError && (
-                <svg className="w-4 h-4 text-brand-text/30 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="relative w-4 h-4 text-brand-text/30 group-hover:text-brand-cyan group-hover:translate-x-1 transition-all duration-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6" />
                 </svg>
               )}
@@ -175,6 +190,12 @@ export default function WalletConnectPanel() {
         );
       })}
 
+      <style jsx>{`
+        @keyframes shimmer {
+          0% { background-position: 200% 0; }
+          100% { background-position: -200% 0; }
+        }
+      `}</style>
     </div>
   );
 }

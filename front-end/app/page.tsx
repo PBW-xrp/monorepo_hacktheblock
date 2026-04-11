@@ -8,6 +8,8 @@ import Navbar from "@/components/Navbar";
 import FeatureCard from "@/components/FeatureCard";
 import HeroSection from "@/components/HeroSection";
 import { HowItWorks, CTABanner, FeaturesHeader, ProblemSolution } from "@/components/LandingSections";
+import GenerativeShowcase from "@/components/GenerativeShowcase";
+import CodeSnippetCard from "@/components/CodeSnippetCard";
 
 function ShieldIcon() {
   return (
@@ -79,6 +81,8 @@ export default function LandingPage() {
       <FeaturesSection />
 
       <HowItWorks />
+      <CodeSnippetCard />
+      <GenerativeShowcase />
       <ProblemSolution />
       <CTABanner />
 

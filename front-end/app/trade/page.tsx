@@ -1,12 +1,28 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import {
   ArrowLeft, Shield, Loader2, AlertCircle, ChevronDown,
-  CheckCircle2, Clock, TrendingUp, Zap, ExternalLink, Copy, Activity,
+  CheckCircle2, Clock, Zap, ExternalLink, Copy,
 } from "lucide-react";
 import type { IntentV1 } from "@/types/intent";
+import GreeksDashboard from "@/components/GreeksDashboard";
+import AnimatedCounter from "@/components/AnimatedCounter";
+import ComputingValue from "@/components/ComputingValue";
+import SuccessRipple from "@/components/SuccessRipple";
+import QuoteCountdown from "@/components/QuoteCountdown";
+
+// Dynamic import for R3F — client-side only, no SSR
+const PayoffSurface3D = dynamic(() => import("@/components/PayoffSurface3D"), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-[300px] rounded-2xl bg-gradient-to-br from-[#0a0d14] to-[#0d1325] border border-white/[0.06] flex items-center justify-center">
+      <Loader2 className="w-6 h-6 text-brand-cyan animate-spin" />
+    </div>
+  ),
+});
 
 // ---------------------------------------------------------------------------
 // Config — hardcoded values from team (April 11 2026)
@@ -216,6 +232,12 @@ export default function TradePage() {
         <span className="text-brand-text/30">·</span>
         <span className="text-sm text-brand-text/50">Options Trading</span>
         <div className="ml-auto flex items-center gap-3">
+          <Link
+            href="/board"
+            className="text-xs text-brand-cyan/60 hover:text-brand-cyan transition-colors"
+          >
+            Option Board →
+          </Link>
           <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
             <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
             <span className="text-xs text-brand-text/50 font-mono">XRPL groth5</span>
@@ -288,7 +310,7 @@ export default function TradePage() {
                   step="1"
                   value={form.amount}
                   onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-brand-text font-mono text-sm focus:outline-none focus:border-brand-blue/50 transition-colors"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-brand-text font-mono text-sm focus:outline-none focus:border-brand-cyan/60 focus:shadow-[0_0_24px_rgba(0,229,255,0.15)] focus:bg-white/[0.06] transition-all duration-300"
                   placeholder="100"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-text/30 font-mono">XRP</span>
@@ -304,7 +326,7 @@ export default function TradePage() {
                   step="0.01"
                   value={form.strike}
                   onChange={(e) => setForm((f) => ({ ...f, strike: e.target.value }))}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-brand-text font-mono text-sm focus:outline-none focus:border-brand-blue/50 transition-colors"
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-brand-text font-mono text-sm focus:outline-none focus:border-brand-cyan/60 focus:shadow-[0_0_24px_rgba(0,229,255,0.15)] focus:bg-white/[0.06] transition-all duration-300"
                   placeholder="1.15"
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-text/30 font-mono">USD</span>
@@ -324,7 +346,7 @@ export default function TradePage() {
             <div className="relative">
               <button
                 onClick={() => setExpiryOpen((o) => !o)}
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center justify-between text-brand-text text-sm hover:border-brand-blue/40 transition-colors"
+                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 flex items-center justify-between text-brand-text text-sm hover:border-brand-cyan/50 hover:bg-white/[0.06] hover:shadow-[0_0_20px_rgba(0,229,255,0.12)] transition-all duration-300"
               >
                 <span className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-brand-text/40" />
@@ -405,65 +427,96 @@ export default function TradePage() {
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              {/* ZK badge */}
-              <div className="glass-card px-5 py-4 border border-brand-cyan/20 flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-brand-cyan/10 flex items-center justify-center shrink-0 mt-0.5">
+              {/* 3D Payoff Surface */}
+              <div className="flex flex-col gap-2">
+                <p className="text-xs font-semibold uppercase tracking-widest text-brand-text/40 px-1">Payoff Surface</p>
+                <PayoffSurface3D
+                  spot={SPOT_PRICE}
+                  strike={parseFloat(form.strike)}
+                  isPut={form.isPut}
+                  premium={quoteState.quote.priceBS}
+                  vol={quoteState.quote.impliedVol}
+                  rate={0}
+                  expiryYears={form.expiry.seconds / (365 * 24 * 3600)}
+                />
+              </div>
+
+              {/* ZK badge — computing effect */}
+              <div className="glass-card px-5 py-4 border border-brand-cyan/20 flex items-start gap-3 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-40 pointer-events-none" style={{
+                  background: "linear-gradient(110deg, transparent 30%, rgba(0,229,255,0.05) 50%, transparent 70%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer-zk 3s linear infinite",
+                }} />
+                <div className="relative w-8 h-8 rounded-full bg-brand-cyan/10 flex items-center justify-center shrink-0 mt-0.5">
                   <Shield className="w-4 h-4 text-brand-cyan" />
+                  <div className="absolute inset-0 rounded-full border border-brand-cyan/40 animate-ping" style={{ animationDuration: "2s" }} />
                 </div>
-                <div className="flex-1 min-w-0">
+                <div className="relative flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
                     <span className="text-xs font-bold text-brand-cyan uppercase tracking-widest">ZK Provable</span>
-                    <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
                   </div>
-                  <p className="text-xs text-brand-text/40 font-mono">
-                    spot={quoteState.quote.fixedPoint.spot} · strike={quoteState.quote.fixedPoint.strike} · vol={quoteState.quote.fixedPoint.vol} · price={quoteState.quote.fixedPoint.price}
+                  <p className="text-xs text-brand-text/50 font-mono">
+                    spot=<ComputingValue value={quoteState.quote.fixedPoint.spot} delay={0} className="text-brand-cyan/80" /> · strike=<ComputingValue value={quoteState.quote.fixedPoint.strike} delay={150} className="text-brand-cyan/80" /> · vol=<ComputingValue value={quoteState.quote.fixedPoint.vol} delay={300} className="text-brand-cyan/80" /> · price=<ComputingValue value={quoteState.quote.fixedPoint.price} delay={450} className="text-brand-cyan/80" />
                   </p>
                   <p className="text-xs text-brand-text/40 mt-0.5">
                     {quoteState.quote.fixedPoint.isItm ? "✓ In the money" : "✗ Out of the money"}
                   </p>
                 </div>
+                <style jsx>{`
+                  @keyframes shimmer-zk {
+                    0% { background-position: 200% 0; }
+                    100% { background-position: -200% 0; }
+                  }
+                `}</style>
               </div>
 
               {/* Premium */}
-              <div className="glass-card p-6 flex flex-col gap-1">
-                <p className="text-xs text-brand-text/40 uppercase tracking-widest font-semibold">Premium</p>
-                <div className="flex items-baseline gap-2 mt-1">
-                  <span className="text-4xl font-bold text-brand-text">{fmt(quoteState.quote.totalPremiumXRP)}</span>
+              <div className="glass-card p-6 flex flex-col gap-1 relative overflow-hidden">
+                <div className="absolute inset-0 opacity-30 pointer-events-none" style={{
+                  background: "radial-gradient(ellipse at top right, rgba(0,229,255,0.1) 0%, transparent 60%)"
+                }} />
+                <div className="flex items-start justify-between relative">
+                  <p className="text-xs text-brand-text/40 uppercase tracking-widest font-semibold">Premium</p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-brand-text/30 uppercase tracking-wider">expires</span>
+                    <QuoteCountdown validUntil={quoteState.quote.validUntil} duration={30000} />
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2 mt-1 relative">
+                  <AnimatedCounter
+                    value={quoteState.quote.totalPremiumXRP}
+                    decimals={4}
+                    className="text-4xl font-bold text-brand-text font-mono"
+                  />
                   <span className="text-brand-text/40 font-mono">XRP</span>
                 </div>
-                <p className="text-xs text-brand-text/30 mt-0.5">
+                <p className="text-xs text-brand-text/30 mt-0.5 relative">
                   BS price: ${fmt(quoteState.quote.priceBS)} per XRP · {form.amount} XRP · {form.isPut ? "Put" : "Call"} · Strike ${form.strike} · {form.expiry.label}
                 </p>
               </div>
 
               {/* Greeks */}
-              <div className="glass-card p-5 flex flex-col gap-3">
-                <p className="text-xs font-semibold uppercase tracking-widest text-brand-text/40 flex items-center gap-1.5">
-                  <TrendingUp className="w-3 h-3" />
-                  Greeks
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {[
-                    { label: "Delta", value: fmt(quoteState.quote.delta, 4), hint: "Price sensitivity" },
-                    { label: "Vega",  value: fmt(quoteState.quote.vega, 4),  hint: "Vol sensitivity" },
-                    { label: "Spot",  value: `$${quoteState.quote.spotPrice}`, hint: "Oracle price" },
-                    { label: "IV",    value: `${(quoteState.quote.impliedVol * 100).toFixed(0)}%`, hint: "Implied volatility" },
-                  ].map((g) => (
-                    <div key={g.label} className="bg-white/[0.03] rounded-xl p-3">
-                      <p className="text-xs text-brand-text/30">{g.label}</p>
-                      <p className="font-mono text-brand-text font-semibold mt-0.5">{g.value}</p>
-                      <p className="text-xs text-brand-text/20 mt-0.5">{g.hint}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <GreeksDashboard
+                delta={quoteState.quote.delta}
+                vega={quoteState.quote.vega}
+                spot={quoteState.quote.spotPrice}
+                strike={parseFloat(form.strike)}
+                isPut={form.isPut}
+                vol={quoteState.quote.impliedVol}
+                rate={0}
+                expiryYears={form.expiry.seconds / (365 * 24 * 3600)}
+              />
 
               {/* ── Buy / TX status ── */}
               {buyState.status === "success" ? (
-                <div className="glass-card p-5 border border-brand-cyan/30 flex flex-col gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-brand-cyan/10 flex items-center justify-center">
+                <div className="glass-card p-5 border border-brand-cyan/30 flex flex-col gap-3 relative overflow-hidden">
+                  <SuccessRipple triggerKey={buyState.txHash} />
+                  <div className="relative flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-brand-cyan/10 flex items-center justify-center relative">
                       <CheckCircle2 className="w-4 h-4 text-brand-cyan" />
+                      <div className="absolute inset-0 rounded-full border border-brand-cyan/40 animate-ping" style={{ animationDuration: "1.5s" }} />
                     </div>
                     <div>
                       <p className="font-semibold text-brand-text text-sm">Premium Paid</p>
@@ -471,7 +524,7 @@ export default function TradePage() {
                     </div>
                   </div>
 
-                  <div>
+                  <div className="relative">
                     <p className="text-xs text-brand-text/30 mb-1.5 uppercase tracking-widest font-medium">XRPL Transaction</p>
                     <div className="bg-white/[0.03] rounded-xl px-4 py-3 flex items-center justify-between gap-2">
                       <span className="font-mono text-xs text-brand-text/60 truncate">{buyState.txHash}</span>
@@ -486,10 +539,10 @@ export default function TradePage() {
                     </div>
                   </div>
 
-                  {copied && <p className="text-xs text-brand-cyan text-center">Copied!</p>}
+                  {copied && <p className="relative text-xs text-brand-cyan text-center">Copied!</p>}
                   <button
                     onClick={() => { setQuoteState({ status: "idle" }); setBuyState({ status: "idle" }); }}
-                    className="text-xs text-brand-text/40 hover:text-brand-text/70 transition-colors text-center"
+                    className="relative text-xs text-brand-text/40 hover:text-brand-text/70 transition-colors text-center"
                   >
                     New quote →
                   </button>
