@@ -88,7 +88,7 @@ export default function WritePage() {
       CancelAfter: derived.cancelAfterRipple,
       FinishFunction: FINISH_FUNCTION_PLACEHOLDER,
       Data: derived.dataHex,
-      NetworkID: XRPL_DEFAULTS.networkId,
+      networkID: XRPL_DEFAULTS.networkId,
     };
 
     setCreateState({ status: "submitting" });
@@ -96,20 +96,8 @@ export default function WritePage() {
     try {
       if (walletState.wallet === "otsu") {
         const provider = (window as any).xrpl;
-        const { Client } = await import("xrpl");
-        const client = new Client(GROTH5_WSS);
-        await client.connect();
-        const prepared = await client.autofill({ ...tx, Account: walletState.address } as any);
-        const signed = await provider.signTransaction(prepared);
-        const txBlob = signed?.tx_blob;
-        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
-        const submitResult = await client.submitAndWait(txBlob);
-        await client.disconnect();
-        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
-        if (txResult && txResult !== "tesSUCCESS") {
-          throw new Error(`Transaction failed: ${txResult}`);
-        }
-        const txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
+        const result = await provider.signAndSubmit(tx);
+        const txHash = result?.hash || "confirmed";
         setCreateState({ status: "success", txHash });
         return;
       }
@@ -124,15 +112,16 @@ export default function WritePage() {
       }
 
       throw new Error("Wallet not supported for EscrowCreate.");
-    } catch (err) {
-      setCreateState({ status: "error", message: err instanceof Error ? err.message : "EscrowCreate failed." });
+    } catch (err: any) {
+      const message = err?.message || err?.data?.message || err?.response?.data?.message || (typeof err === "string" ? err : null) || JSON.stringify(err, Object.getOwnPropertyNames(err || {})) || "EscrowCreate failed.";
+      setCreateState({ status: "error", message });
     }
   };
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text">
-      <nav className="border-b-2 border-black px-6 py-4 flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2 text-brand-muted hover:text-brand-text transition-colors text-sm font-mono">
+      <nav className="border-b border-white/[0.06] px-6 py-4 flex items-center gap-4">
+        <Link href="/" className="flex items-center gap-2 text-brand-text/50 hover:text-brand-text transition-colors text-sm">
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
@@ -151,13 +140,13 @@ export default function WritePage() {
 
           <div className="glass-card p-5 flex flex-col gap-4">
             <label className="text-xs text-brand-text/50">Buyer address</label>
-            <input value={buyerAddress} onChange={(e) => setBuyerAddress(e.target.value)} className="w-full bg-white border-2 border-black px-4 py-3 text-sm font-mono shadow-win98-sunken" />
+            <input value={buyerAddress} onChange={(e) => setBuyerAddress(e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-mono" />
 
             <label className="text-xs text-brand-text/50">Collateral (XRP)</label>
-            <input value={collateralXrp} onChange={(e) => setCollateralXrp(e.target.value)} className="w-full bg-white border-2 border-black px-4 py-3 text-sm font-mono shadow-win98-sunken" />
+            <input value={collateralXrp} onChange={(e) => setCollateralXrp(e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-mono" />
 
             <label className="text-xs text-brand-text/50">Strike (USD)</label>
-            <input value={strikeUsd} onChange={(e) => setStrikeUsd(e.target.value)} className="w-full bg-white border-2 border-black px-4 py-3 text-sm font-mono shadow-win98-sunken" />
+            <input value={strikeUsd} onChange={(e) => setStrikeUsd(e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-mono" />
 
             <label className="text-xs text-brand-text/50">Option type</label>
             <div className="grid grid-cols-2 gap-2">
@@ -179,13 +168,13 @@ export default function WritePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onClick={handlePrepare} className="btn-primary w-full flex items-center justify-center gap-2">
+            <button onClick={handlePrepare} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-blue to-brand-cyan text-[#0a0d14] flex items-center justify-center gap-2">
               <Wallet className="w-4 h-4" />
-              PREPARE
+              Prepare EscrowCreate
             </button>
-            <button onClick={handleSubmit} disabled={createState.status === "submitting"} className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: createState.status === "ready" ? "#2aab63" : "#808080" }}>
+            <button onClick={handleSubmit} disabled={createState.status === "submitting"} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-purple to-brand-blue text-white flex items-center justify-center gap-2 disabled:opacity-60">
               {createState.status === "submitting" ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              SUBMIT
+              Submit EscrowCreate
             </button>
           </div>
 
