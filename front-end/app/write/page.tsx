@@ -88,7 +88,7 @@ export default function WritePage() {
       CancelAfter: derived.cancelAfterRipple,
       FinishFunction: FINISH_FUNCTION_PLACEHOLDER,
       Data: derived.dataHex,
-      NetworkID: XRPL_DEFAULTS.networkId,
+      networkID: XRPL_DEFAULTS.networkId,
     };
 
     setCreateState({ status: "submitting" });
@@ -96,20 +96,8 @@ export default function WritePage() {
     try {
       if (walletState.wallet === "otsu") {
         const provider = (window as any).xrpl;
-        const { Client } = await import("xrpl");
-        const client = new Client(GROTH5_WSS);
-        await client.connect();
-        const prepared = await client.autofill({ ...tx, Account: walletState.address } as any);
-        const signed = await provider.signTransaction(prepared);
-        const txBlob = signed?.tx_blob;
-        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
-        const submitResult = await client.submitAndWait(txBlob);
-        await client.disconnect();
-        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
-        if (txResult && txResult !== "tesSUCCESS") {
-          throw new Error(`Transaction failed: ${txResult}`);
-        }
-        const txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
+        const result = await provider.signAndSubmit(tx);
+        const txHash = result?.hash || "confirmed";
         setCreateState({ status: "success", txHash });
         return;
       }
@@ -124,8 +112,9 @@ export default function WritePage() {
       }
 
       throw new Error("Wallet not supported for EscrowCreate.");
-    } catch (err) {
-      setCreateState({ status: "error", message: err instanceof Error ? err.message : "EscrowCreate failed." });
+    } catch (err: any) {
+      const message = err?.message || err?.data?.message || err?.response?.data?.message || (typeof err === "string" ? err : null) || JSON.stringify(err, Object.getOwnPropertyNames(err || {})) || "EscrowCreate failed.";
+      setCreateState({ status: "error", message });
     }
   };
 

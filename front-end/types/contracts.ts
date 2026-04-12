@@ -24,16 +24,27 @@ export const WRITER_DEFAULTS = {
 };
 
 export function encodeEscrowDataV1({ strikeUsd, expirySeconds, optionType }: Pick<WriteFormValues, "strikeUsd" | "expirySeconds" | "optionType">) {
-  const strikeFixed = Math.round(Number(strikeUsd) * 1_000_000);
+  const strike = Number(strikeUsd);
+  if (!Number.isFinite(strike) || strike <= 0) {
+    throw new Error("Invalid strike.");
+  }
+  if (!Number.isFinite(expirySeconds) || expirySeconds <= 0) {
+    throw new Error("Invalid expiry.");
+  }
+
+  const strikeFixed = Math.round(strike * 1_000_000);
   const isCall = optionType === "CALL" ? 1 : 0;
 
-  const buffer = Buffer.alloc(17);
-  buffer.writeBigUInt64LE(BigInt(strikeFixed), 0);
-  buffer.writeUInt8(isCall, 8);
-  buffer.writeBigUInt64LE(BigInt(expirySeconds), 9);
+  const bytes = new Uint8Array(17);
+  const view = new DataView(bytes.buffer);
+  view.setBigUint64(0, BigInt(strikeFixed), true);
+  view.setUint8(8, isCall);
+  view.setBigUint64(9, BigInt(expirySeconds), true);
+
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, "0")).join("");
 
   return {
-    hex: buffer.toString("hex"),
+    hex,
     strikeFixed,
     isCall,
   };
