@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ExternalLink, Loader2, Shield } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
@@ -16,9 +17,11 @@ type ExerciseState =
   | { status: "success"; txHash: string }
   | { status: "error"; message: string };
 
-export default function ExercisePage() {
+function ExercisePageContent() {
   const { state: walletState } = useWallet();
-  const [owner, setOwner] = useState(DEFAULT_OWNER);
+  const searchParams = useSearchParams();
+  const ownerFromQuery = searchParams.get("owner") || DEFAULT_OWNER;
+  const [owner, setOwner] = useState(ownerFromQuery);
   const [offerSequence, setOfferSequence] = useState("");
   const [journalHex, setJournalHex] = useState(DEFAULT_JOURNAL);
   const [sealHex, setSealHex] = useState("");
@@ -163,5 +166,13 @@ export default function ExercisePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ExercisePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-brand-bg text-brand-text flex items-center justify-center">Loading exercise flow…</div>}>
+      <ExercisePageContent />
+    </Suspense>
   );
 }

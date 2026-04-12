@@ -3,6 +3,7 @@
 import { useRef, useState, useMemo } from "react";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Clock, Wallet, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import GenerativeOptionCard from "./GenerativeOptionCard";
 
 interface OptionBoardCardProps {
@@ -209,6 +210,15 @@ export default function OptionBoardCard({
       <div className="relative border-t border-white/[0.05] px-5 py-3 flex items-center justify-between text-[10px] font-mono text-brand-text/40">
         <span>writer <span className="text-brand-text/60">{shortAddr(writer)}</span></span>
         <span>buyer <span className="text-brand-text/60">{shortAddr(buyer)}</span></span>
+      </div>
+
+      <div className="relative border-t border-white/[0.05] px-5 py-3 flex items-center justify-end">
+        <Link
+          href={`/exercise?owner=${encodeURIComponent(writer)}&buyer=${encodeURIComponent(buyer)}`}
+          className="text-xs text-brand-cyan/70 hover:text-brand-cyan transition-colors font-medium"
+        >
+          Use in exercise →
+        </Link>
       </div>
 
       {/* Bottom glow line */}
