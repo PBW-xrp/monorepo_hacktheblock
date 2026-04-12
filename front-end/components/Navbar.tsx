@@ -23,19 +23,7 @@ export default function Navbar() {
         </Link>
 
         {/* Nav links */}
-        <div className="hidden md:flex items-center gap-8">
-          <a
-            href="#features"
-            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
-          >
-            Features
-          </a>
-          <a
-            href="#how-it-works"
-            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
-          >
-            How It Works
-          </a>
+        <div className="hidden md:flex items-center gap-6">
           <Link
             href="/write"
             className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
@@ -47,6 +35,12 @@ export default function Navbar() {
             className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
           >
             Board
+          </Link>
+          <Link
+            href="/trade"
+            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
+          >
+            Trade
           </Link>
           <Link
             href="/exercise"
