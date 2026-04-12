@@ -142,20 +142,9 @@ The deploy path is:
 Wallet signing and transaction submission on groth5 are still part of the real deployment path.
 For the demo flow, Otsu is the primary wallet and the signed transaction is submitted to groth5.
 
-## Current implementation status
-
-Working in this repo now:
-- zkVM workspace is ported
-- guest is ported
-- host is ported
-- escrow verifier is ported
-- fixture files are ported
-- verifier tests are passing in this repo
-
 ## What still needs to be completed
 
 For full live demo readiness, this folder still needs:
-- any remaining contract-support files required to operate only from `contracts/`
 - repo-side validation of the full workspace build
 - repo-side proof generation run from `zk-host`
 - final groth5 deploy and transaction execution path
