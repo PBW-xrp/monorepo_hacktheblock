@@ -338,13 +338,20 @@ Before trying the groth5 run, confirm these are ready:
 
 ## Known wallet addresses
 
-Current addresses discussed for the groth5 run:
+Current addresses used in the working payload examples:
 - buyer: `r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr`
 - writer: `rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe`
 
-These still need to match the actual wallets used during signing.
+These addresses should match the actual wallets used during signing.
 
 ## EscrowCreate payload template
+
+Current locked values in this repository:
+- writer: `rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe`
+- buyer: `r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr`
+- collateral: `100000000` drops
+- data: `308c11000000000001008d270000000000`
+
 
 ```json
 {
@@ -365,6 +372,12 @@ Notes:
 - `Data` must match the agreed byte format
 
 ## EscrowFinish payload template
+
+Current locked values in this repository:
+- buyer account: `r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr`
+- owner: `rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe`
+- journal: `c05c150000000000308c110000000000cc100000008d2700000000000100000090d003000000000001000000`
+
 
 ```json
 {
@@ -499,6 +512,14 @@ Use the writer wallet only for:
 
 Use the buyer wallet for:
 - `EscrowFinish`
+
+## Deployment tracking
+
+Use `contracts/DEPLOYMENT_STATUS.md` to track:
+- locked payload values
+- current deployment inputs
+- real groth5 attempt results
+- transaction hashes and result codes
 
 ## Final note
 
