@@ -1,45 +1,54 @@
 "use client";
 
-import { useRef, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring } from "framer-motion";
 
 interface MagneticButtonProps {
   children: ReactNode;
   className?: string;
-  /** How strongly the element follows the cursor (0–1) */
-  strength?: number;
+  /** Max pixels the element can move from its origin */
+  maxDistance?: number;
 }
 
 /**
- * Wraps content in a magnetic effect — the element pulls toward the cursor on hover.
- * Uses spring physics for smooth, organic motion.
+ * Global magnetic effect — the element always leans toward the cursor,
+ * no matter where on screen it is. Closer = stronger pull.
+ * Never leaves its original position beyond maxDistance.
  */
-export default function MagneticButton({ children, className = "", strength = 0.4 }: MagneticButtonProps) {
+export default function MagneticButton({ children, className = "", maxDistance = 12 }: MagneticButtonProps) {
   const ref = useRef<HTMLDivElement>(null);
   const x = useMotionValue(0);
   const y = useMotionValue(0);
-  const springX = useSpring(x, { stiffness: 200, damping: 18, mass: 0.5 });
-  const springY = useSpring(y, { stiffness: 200, damping: 18, mass: 0.5 });
+  const springX = useSpring(x, { stiffness: 150, damping: 20, mass: 0.5 });
+  const springY = useSpring(y, { stiffness: 150, damping: 20, mass: 0.5 });
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!ref.current) return;
-    const rect = ref.current.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    x.set((e.clientX - cx) * strength);
-    y.set((e.clientY - cy) * strength);
-  };
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      if (!ref.current) return;
+      const rect = ref.current.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
 
-  const handleMouseLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      // Strength falls off with distance — closer = stronger
+      // At 0px away: full maxDistance. At 800px+ away: ~1-2px lean.
+      const strength = maxDistance / (1 + distance * 0.004);
+
+      const angle = Math.atan2(dy, dx);
+      x.set(Math.cos(angle) * strength);
+      y.set(Math.sin(angle) * strength);
+    };
+
+    window.addEventListener("mousemove", onMove);
+    return () => window.removeEventListener("mousemove", onMove);
+  }, [x, y, maxDistance]);
 
   return (
     <motion.div
       ref={ref}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
       style={{ x: springX, y: springY }}
       className={`inline-block ${className}`}
     >

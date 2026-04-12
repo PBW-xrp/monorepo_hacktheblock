@@ -252,7 +252,7 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.42 }}
             className="flex flex-col sm:flex-row gap-4 mb-14 justify-center lg:justify-start"
           >
-            <MagneticButton strength={0.35} className="w-full sm:w-auto">
+            <MagneticButton maxDistance={24} className="w-full sm:w-auto">
               <motion.div whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
                 <Link href="/login" className="btn-primary text-white w-full sm:w-auto">
                   Launch App

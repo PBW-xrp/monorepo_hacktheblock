@@ -39,79 +39,14 @@ const steps = [
 ];
 
 export function HowItWorks() {
-  const container = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      // Animate the line drawing down as user scrolls through the section
-      gsap.fromTo(
-        ".timeline-line",
-        { scaleY: 0, transformOrigin: "top" },
-        {
-          scaleY: 1,
-          ease: "none",
-          scrollTrigger: {
-            trigger: container.current,
-            start: "top 70%",
-            end: "bottom 80%",
-            scrub: 1,
-          },
-        }
-      );
-
-      // Stagger reveal each step with scrub
-      gsap.utils.toArray<HTMLElement>(".timeline-step").forEach((step) => {
-        gsap.fromTo(
-          step,
-          { opacity: 0, x: -40, filter: "blur(8px)" },
-          {
-            opacity: 1,
-            x: 0,
-            filter: "blur(0px)",
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: step,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      });
-
-      // Pulse the step numbers as they enter view
-      gsap.utils.toArray<HTMLElement>(".timeline-number").forEach((num) => {
-        gsap.fromTo(
-          num,
-          { scale: 0.5, opacity: 0 },
-          {
-            scale: 1,
-            opacity: 1,
-            duration: 0.6,
-            ease: "back.out(2)",
-            scrollTrigger: {
-              trigger: num,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      });
-    },
-    { scope: container }
-  );
-
   return (
     <section
-      ref={container}
       id="how-it-works"
-      style={{ scrollMarginTop: "80px" }}
-      className="px-6 pb-28 max-w-4xl mx-auto"
+      className="px-6 py-20 max-w-4xl mx-auto"
     >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, margin: "-80px" }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
@@ -120,19 +55,43 @@ export function HowItWorks() {
       </motion.div>
 
       <ol className="relative space-y-10 ml-4">
-        {/* Animated timeline line */}
-        <span className="timeline-line absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-brand-blue via-brand-cyan to-brand-purple" />
-        {steps.map((item) => (
-          <li key={item.step} className="timeline-step ml-8 cursor-default relative">
-            <span
-              className="timeline-number absolute -left-12 flex items-center justify-center w-8 h-8 rounded-full border-2 border-black bg-brand-bg text-xs font-bold font-mono"
-              style={{ color: item.colorHex, boxShadow: `0 0 16px ${item.colorHex}40` }}
+        {/* Timeline line — grows in via Framer Motion */}
+        <motion.span
+          initial={{ scaleY: 0 }}
+          animate={{ scaleY: 1 }}
+          transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+          className="absolute left-0 top-0 bottom-0 w-0.5 bg-black origin-top"
+        />
+        {steps.map((item, i) => (
+          <motion.li
+            key={item.step}
+            initial={{ opacity: 0, x: -40, filter: "blur(8px)" }}
+            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            transition={{
+              duration: 0.6,
+              delay: 0.3 + i * 0.15,
+              ease: [0.22, 1, 0.36, 1],
+            }}
+            className="ml-8 cursor-default relative"
+          >
+            <motion.span
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{
+                duration: 0.5,
+                delay: 0.4 + i * 0.15,
+                type: "spring",
+                stiffness: 300,
+                damping: 15,
+              }}
+              className="absolute -left-12 flex items-center justify-center w-8 h-8 border-2 border-black bg-brand-bg text-sm font-bold font-mono"
+              style={{ color: item.colorHex }}
             >
               {item.step}
-            </span>
-            <h3 className="text-brand-text font-semibold mb-1.5">{item.title}</h3>
-            <p className="text-brand-muted text-sm leading-relaxed">{item.body}</p>
-          </li>
+            </motion.span>
+            <h3 className="text-brand-text font-semibold mb-1">{item.title}</h3>
+            <p className="text-brand-muted leading-relaxed">{item.body}</p>
+          </motion.li>
         ))}
       </ol>
     </section>
