@@ -195,6 +195,10 @@ export default function TradePage() {
         setBuyState({ status: "pending" });
         const submitResult = await client.submitAndWait(txBlob);
         await client.disconnect();
+        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
+        if (txResult && txResult !== "tesSUCCESS") {
+          throw new Error(`Transaction failed: ${txResult}`);
+        }
         txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
 
       } else if (walletState.wallet === "crossmark") {
