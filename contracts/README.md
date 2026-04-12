@@ -80,6 +80,68 @@ sequenceDiagram
     Verifier-->>XRPL: Return 1 or 0
 ```
 
+## Install and run
+
+### Prerequisites
+You need these installed on the machine:
+- Rust toolchain
+- Cargo
+- Docker
+- RISC Zero toolchain support required by the prover path
+
+### Build the workspace
+From the repo root:
+
+```bash
+cd contracts
+cargo build
+```
+
+### Run verifier tests
+
+```bash
+cd contracts
+cargo test -p verafi-escrow-verifier
+```
+
+### Generate a proof locally
+This runs the host, executes the guest, and emits journal plus seal payloads:
+
+```bash
+cd contracts
+cargo run -p verafi-zk-host -- 1400000 1150000 4300 0 2592000 1
+```
+
+Parameter order:
+- `spot`
+- `strike`
+- `vol`
+- `risk_free_rate`
+- `expiry`
+- `is_call`
+
+### Build the XRPL verifier Wasm
+
+```bash
+cd contracts/escrow-verifier
+cargo build --target wasm32v1-none --release
+```
+
+### Contract deploy path
+The deploy path is:
+1. build the verifier Wasm
+2. upload the Wasm to groth5 using the XRPL smart contract flow
+3. capture the deployed Wasm reference used by `FinishFunction`
+4. create `EscrowCreate` with:
+   - `Destination = buyer`
+   - `Data = encoded escrow bytes`
+   - `FinishFunction = uploaded Wasm reference`
+5. later submit `EscrowFinish` with journal and seal memos
+
+### Important deploy note
+Wallet signing and transaction submission on groth5 are still part of the real deployment path.
+For the demo flow, Otsu is the primary wallet and the signed transaction is submitted to groth5.
+
 ## Current implementation status
 
 Working in this repo now:
