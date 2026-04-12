@@ -135,7 +135,7 @@ Current `/trade` supports:
 ### `/board`
 Current `/board` supports:
 - fetch real escrows from groth5 when present
-- fallback to demo data when no real escrows are found
+- optional fallback to demo data when `NEXT_PUBLIC_ENABLE_MOCK_OPTIONS=true`
 
 ### `/exercise`
 Current `/exercise` supports:
