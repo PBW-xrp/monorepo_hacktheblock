@@ -67,7 +67,7 @@ export default function WalletConnectPanel() {
           <p className="font-mono text-brand-cyan text-sm break-all">{state.address}</p>
         </div>
         <Link
-          href="/write"
+          href="/trade"
           className="w-full py-3 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2
             bg-gradient-to-r from-brand-blue to-brand-cyan text-[#0a0d14]
             hover:opacity-90 hover:shadow-[0_0_20px_rgba(107,143,255,0.4)]"

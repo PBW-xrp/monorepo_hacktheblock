@@ -486,32 +486,76 @@ export default function TradePage() {
                 `}</style>
               </div>
 
-              {/* Premium */}
-              <div className="glass-card p-6 flex flex-col gap-1 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-30 pointer-events-none" style={{
-                  background: "radial-gradient(ellipse at top right, rgba(0,229,255,0.1) 0%, transparent 60%)"
-                }} />
-                <div className="flex items-start justify-between relative">
-                  <p className="text-xs text-brand-text/40 uppercase tracking-widest font-semibold">Premium</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-brand-text/30 uppercase tracking-wider">expires</span>
-                    <QuoteCountdown validUntil={quoteState.quote.validUntil} duration={30000} />
+              {/* Premium + Action — FIRST, before charts */}
+              <div className="glass-card p-6 flex flex-col gap-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <p className="text-xs text-brand-muted uppercase tracking-widest font-semibold mb-1">Premium</p>
+                    <div className="flex items-baseline gap-2">
+                      <AnimatedCounter
+                        value={quoteState.quote.totalPremiumXRP}
+                        decimals={4}
+                        className="text-3xl font-bold text-brand-text font-mono"
+                      />
+                      <span className="text-brand-muted font-mono">XRP</span>
+                    </div>
+                    <p className="text-xs text-brand-muted mt-1">
+                      {form.isPut ? "Put" : "Call"} · Strike ${form.strike} · {form.expiry.label}
+                    </p>
                   </div>
+                  <QuoteCountdown validUntil={quoteState.quote.validUntil} duration={30000} />
                 </div>
-                <div className="flex items-baseline gap-2 mt-1 relative">
-                  <AnimatedCounter
-                    value={quoteState.quote.totalPremiumXRP}
-                    decimals={4}
-                    className="text-4xl font-bold text-brand-text font-mono"
-                  />
-                  <span className="text-brand-text/40 font-mono">XRP</span>
-                </div>
-                <p className="text-xs text-brand-text/30 mt-0.5 relative">
-                  BS price: ${fmt(quoteState.quote.priceBS)} per XRP · {form.amount} XRP · {form.isPut ? "Put" : "Call"} · Strike ${form.strike} · {form.expiry.label}
-                </p>
+
+                {/* Action button — prominent, right here */}
+                {buyState.status === "success" ? (
+                  <div className="flex flex-col gap-3 border-t-2 border-black pt-4">
+                    <div className="flex items-center gap-3">
+                      <CheckCircle2 className="w-5 h-5 text-brand-green" />
+                      <div>
+                        <p className="font-semibold text-brand-text text-sm">Premium Paid</p>
+                        <a href={`${XRPL_EXPLORER}/transactions/${buyState.txHash}`} target="_blank" rel="noopener noreferrer" className="text-xs text-brand-green font-mono hover:underline flex items-center gap-1">
+                          {buyState.txHash.slice(0, 16)}… <ExternalLink className="w-3 h-3" />
+                        </a>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => { setQuoteState({ status: "idle" }); setBuyState({ status: "idle" }); }}
+                      className="text-xs text-brand-muted hover:text-brand-text transition-colors text-center font-mono"
+                    >
+                      New quote →
+                    </button>
+                  </div>
+                ) : walletState.status !== "connected" ? (
+                  <Link href="/login" className="btn-primary w-full text-center">
+                    Connect Wallet to Pay
+                  </Link>
+                ) : buyState.status === "error" ? (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-xs text-brand-red font-mono">{buyState.message}</p>
+                    <button onClick={handleBuy} className="btn-primary w-full">Retry</button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleBuy}
+                    disabled={buyState.status === "confirming" || buyState.status === "pending"}
+                    className="btn-primary w-full disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {buyState.status === "confirming" || buyState.status === "pending" ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        {buyState.status === "confirming" ? "Confirm in wallet…" : "Submitting…"}
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="w-4 h-4" />
+                        PAY PREMIUM
+                      </>
+                    )}
+                  </button>
+                )}
               </div>
 
-              {/* Greeks */}
+              {/* Greeks — below the action */}
               <GreeksDashboard
                 delta={quoteState.quote.delta}
                 vega={quoteState.quote.vega}
@@ -522,77 +566,6 @@ export default function TradePage() {
                 rate={0}
                 expiryYears={form.expiry.seconds / (365 * 24 * 3600)}
               />
-
-              {/* ── Buy / TX status ── */}
-              {buyState.status === "success" ? (
-                <div className="glass-card p-5 border border-brand-cyan/30 flex flex-col gap-3 relative overflow-hidden">
-                  <SuccessRipple triggerKey={buyState.txHash} />
-                  <div className="relative flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-brand-cyan/10 flex items-center justify-center relative">
-                      <CheckCircle2 className="w-4 h-4 text-brand-cyan" />
-                      <div className="absolute inset-0 rounded-full border border-brand-cyan/40 animate-ping" style={{ animationDuration: "1.5s" }} />
-                    </div>
-                    <div>
-                      <p className="font-semibold text-brand-text text-sm">Premium Paid</p>
-                      <p className="text-xs text-brand-text/40">XRPL Payment confirmed</p>
-                    </div>
-                  </div>
-
-                  <div className="relative">
-                    <p className="text-xs text-brand-text/30 mb-1.5 uppercase tracking-widest font-medium">XRPL Transaction</p>
-                    <div className="bg-white/[0.03] rounded-xl px-4 py-3 flex items-center justify-between gap-2">
-                      <span className="font-mono text-xs text-brand-text/60 truncate">{buyState.txHash}</span>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <button onClick={() => copyHash(buyState.txHash)} className="text-brand-text/40 hover:text-brand-text/80 transition-colors">
-                          <Copy className="w-3.5 h-3.5" />
-                        </button>
-                        <a href={`${XRPL_EXPLORER}/transactions/${buyState.txHash}`} target="_blank" rel="noopener noreferrer" className="text-brand-cyan hover:text-brand-cyan/80 transition-colors">
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      </div>
-                    </div>
-                  </div>
-
-                  {copied && <p className="relative text-xs text-brand-cyan text-center">Copied!</p>}
-                  <button
-                    onClick={() => { setQuoteState({ status: "idle" }); setBuyState({ status: "idle" }); }}
-                    className="relative text-xs text-brand-text/40 hover:text-brand-text/70 transition-colors text-center"
-                  >
-                    New quote →
-                  </button>
-                </div>
-              ) : buyState.status === "error" ? (
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 text-red-400 text-sm bg-red-400/5 border border-red-400/20 rounded-xl px-4 py-3">
-                    <AlertCircle className="w-4 h-4 shrink-0" />
-                    {buyState.message}
-                  </div>
-                  <button onClick={handleBuy} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-purple to-brand-blue text-white hover:opacity-90 transition-all flex items-center justify-center gap-2">
-                    Retry
-                  </button>
-                </div>
-              ) : (
-                <button
-                  onClick={handleBuy}
-                  disabled={buyState.status === "confirming" || buyState.status === "pending"}
-                  className="w-full py-4 rounded-2xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2
-                    bg-gradient-to-r from-brand-purple to-brand-blue text-white
-                    hover:opacity-90 hover:shadow-[0_0_24px_rgba(155,107,255,0.4)]
-                    disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {buyState.status === "confirming" || buyState.status === "pending" ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      {buyState.status === "confirming" ? "Confirm in wallet…" : "Sending XRPL Payment…"}
-                    </>
-                  ) : (
-                    <>
-                      <Zap className="w-4 h-4" />
-                      Pay Premium
-                    </>
-                  )}
-                </button>
-              )}
             </div>
           )}
         </div>
