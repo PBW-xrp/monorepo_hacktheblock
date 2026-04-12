@@ -32,19 +32,17 @@ VeraFi is one unified project that targets multiple bounties simultaneously. All
 
 ### Primary bounties (core deliverables)
 
-| Bounty | Prize | What qualifies us |
-|--------|-------|-------------------|
-| **Main prizes (1st-3rd)** | up to 2,500 EUR | First options protocol on XRPL. DeFi nativo, 4 txns per lifecycle on L1. Fills a gap in a 310-project ecosystem. |
-| **Boundless** | 1,000 EUR | ZK proof of Black-Scholes computed in RISC Zero zkVM, verified on-chain via Groth16 on groth5 devnet. Uses the Boundless starter kit directly. Emiliano Bonassi (VP Eng Boundless) is judge and mentor. |
-| **Impact Finance** | 1,500 EUR (outstanding) or 1,000 EUR (honors) | Democratizes access to financial derivatives. Any XRPL user can hedge risk without needing an EVM wallet, a brokerage account, or financial intermediaries. |
+| Bounty | What qualifies us |
+|--------|-------------------|
+| **Main prizes (1st-3rd)** | First options protocol on XRPL. DeFi nativo, 4 txns per lifecycle on L1. Fills a gap in a 310-project ecosystem. |
+| **Boundless** | ZK proof of Black-Scholes computed in RISC Zero zkVM, verified on-chain via Groth16 on groth5 devnet. Uses the Boundless starter kit directly. Emiliano Bonassi (VP Eng Boundless) is judge and mentor. |
+| **Impact Finance** | Democratizes access to financial derivatives. Any XRPL user can hedge risk without needing an EVM wallet, a brokerage account, or financial intermediaries. |
 
 ### Nice-to-have bounty (visual layer, after core is done)
 
-| Bounty | Prize | What qualifies us |
-|--------|-------|-------------------|
-| **Pixel Meets Chain** | 1,000 EUR | Visually stunning XRPL experience: 3D payoff surfaces, cinematic scroll, generative option cards, animated particle effects, glassmorphism UI. |
-
-**Max potential: ~7,000 EUR** if we land 1st + Boundless + Impact Outstanding + Pixel.
+| Bounty | What qualifies us |
+|--------|-------------------|
+| **Pixel Meets Chain** | Visually stunning XRPL experience: 3D payoff surfaces, cinematic scroll, generative option cards, animated particle effects, glassmorphism UI. |
 
 ---
 
@@ -583,4 +581,3 @@ ZK Smart Escrows (collateral + settlement + on-chain ZK verification), Payments 
 | Oracle price staleness | Update oracle frequently during demo. Read `LastUpdateTime` to check freshness. |
 | 24h time pressure | Bilateral model = 4 txns not 6+. Parallel workstreams. Visual polish > feature count. |
 | Wallets don't support groth5 natively | Use xrpl-connect custom network config. Otsu supports custom networks. |
-
