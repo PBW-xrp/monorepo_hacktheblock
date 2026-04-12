@@ -131,8 +131,8 @@ export default function WritePage() {
 
   return (
     <div className="min-h-screen bg-brand-bg text-brand-text">
-      <nav className="border-b border-white/[0.06] px-6 py-4 flex items-center gap-4">
-        <Link href="/" className="flex items-center gap-2 text-brand-text/50 hover:text-brand-text transition-colors text-sm">
+      <nav className="border-b-2 border-black px-6 py-4 flex items-center gap-4">
+        <Link href="/" className="flex items-center gap-2 text-brand-muted hover:text-brand-text transition-colors text-sm font-mono">
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
@@ -151,13 +151,13 @@ export default function WritePage() {
 
           <div className="glass-card p-5 flex flex-col gap-4">
             <label className="text-xs text-brand-text/50">Buyer address</label>
-            <input value={buyerAddress} onChange={(e) => setBuyerAddress(e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-mono" />
+            <input value={buyerAddress} onChange={(e) => setBuyerAddress(e.target.value)} className="w-full bg-white border-2 border-black px-4 py-3 text-sm font-mono shadow-win98-sunken" />
 
             <label className="text-xs text-brand-text/50">Collateral (XRP)</label>
-            <input value={collateralXrp} onChange={(e) => setCollateralXrp(e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-mono" />
+            <input value={collateralXrp} onChange={(e) => setCollateralXrp(e.target.value)} className="w-full bg-white border-2 border-black px-4 py-3 text-sm font-mono shadow-win98-sunken" />
 
             <label className="text-xs text-brand-text/50">Strike (USD)</label>
-            <input value={strikeUsd} onChange={(e) => setStrikeUsd(e.target.value)} className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-sm font-mono" />
+            <input value={strikeUsd} onChange={(e) => setStrikeUsd(e.target.value)} className="w-full bg-white border-2 border-black px-4 py-3 text-sm font-mono shadow-win98-sunken" />
 
             <label className="text-xs text-brand-text/50">Option type</label>
             <div className="grid grid-cols-2 gap-2">
@@ -179,13 +179,13 @@ export default function WritePage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <button onClick={handlePrepare} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-blue to-brand-cyan text-[#0a0d14] flex items-center justify-center gap-2">
+            <button onClick={handlePrepare} className="btn-primary w-full flex items-center justify-center gap-2">
               <Wallet className="w-4 h-4" />
-              Prepare EscrowCreate
+              PREPARE
             </button>
-            <button onClick={handleSubmit} disabled={createState.status === "submitting"} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-purple to-brand-blue text-white flex items-center justify-center gap-2 disabled:opacity-60">
+            <button onClick={handleSubmit} disabled={createState.status === "submitting"} className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-60" style={{ background: createState.status === "ready" ? "#2aab63" : "#808080" }}>
               {createState.status === "submitting" ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              Submit EscrowCreate
+              SUBMIT
             </button>
           </div>
 
