@@ -7,7 +7,7 @@ It contains the code and runbook for:
 - generating real RISC Zero proof artifacts
 - preparing the `EscrowCreate` payload
 - preparing the `EscrowFinish` payload
-- running the live demo from a laptop on groth5
+- running the full contract workflow from a laptop on groth5
 
 The intended audience for this README is the hackathon team during judging.
 The goal is that a teammate can open this folder on their laptop, follow the steps, and understand exactly what each part does.
@@ -265,7 +265,20 @@ The host prints:
 - the seal hex
 - memo objects ready for `EscrowFinish`
 
-Those outputs are required for the live demo.
+Those outputs are required for the on-chain exercise step.
+
+### Current validated output from this repository
+The contract workspace has already produced these real outputs during local validation:
+
+- Image ID: `873fa78de97d6e673e1f47b3311e4fe2923d8b4259344f73a46ac304bd9e8789`
+- Journal: `c05c150000000000308c110000000000cc100000008d2700000000000100000090d003000000000001000000`
+
+These values come from running:
+
+```bash
+cd contracts
+cargo run -p verafi-zk-host -- 1400000 1150000 4300 0 2592000 1
+```
 
 ## Extract the `FinishFunction` value
 
@@ -310,9 +323,9 @@ The verifier currently supports the real runtime journal layout used by the loca
 The real runtime journal length is:
 - `44 bytes`
 
-## Live demo prerequisites
+## Groth5 prerequisites
 
-Before trying a live demo on groth5, confirm these are ready:
+Before trying the groth5 run, confirm these are ready:
 - writer wallet exists and is funded
 - buyer wallet exists and is funded
 - writer wallet is the one signing `EscrowCreate`
@@ -323,9 +336,9 @@ Before trying a live demo on groth5, confirm these are ready:
 - `FinishFunction` hex has been extracted
 - local host run has produced journal and seal
 
-## Known demo wallet addresses
+## Known wallet addresses
 
-Current addresses discussed for the demo:
+Current addresses discussed for the groth5 run:
 - buyer: `r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr`
 - writer: `rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe`
 
@@ -375,7 +388,7 @@ Notes:
 }
 ```
 
-## Full laptop demo procedure
+## Full laptop run procedure
 
 ### Phase 1. Build everything
 
@@ -446,16 +459,16 @@ When this transaction succeeds, record:
 - final result code
 - whether release happened
 
-## Demo checklist for judges
+## Verification checklist
 
-During the live demo, be ready to show:
-1. the verifier Wasm build
-2. the proof generation command
-3. the generated journal and seal
-4. the `FinishFunction` hex source
-5. the `EscrowCreate` payload
-6. the `EscrowFinish` payload
-7. the on-chain result on groth5 explorer
+Before considering the directory runnable, confirm:
+1. the verifier Wasm build succeeds
+2. the proof generation command succeeds
+3. the journal and seal are produced
+4. the `FinishFunction` hex is extracted from the compiled Wasm
+5. the `EscrowCreate` payload is assembled correctly
+6. the `EscrowFinish` payload is assembled correctly
+7. the on-chain result can be checked on groth5 explorer
 
 ## Troubleshooting notes
 
@@ -489,5 +502,5 @@ Use the buyer wallet for:
 
 ## Final note
 
-This folder should be treated as the contract source of truth for the demo.
+This folder should be treated as the contract source of truth for running and validating the contract workflow.
 Any frontend integration should match the byte layouts, payloads, proof flow, and verifier behavior defined here.
