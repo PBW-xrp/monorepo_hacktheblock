@@ -4,6 +4,9 @@ import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from "framer-motion";
+import AuroraBackground from "@/components/AuroraBackground";
+import Meteors from "@/components/Meteors";
+import MagneticButton from "@/components/MagneticButton";
 
 // ─── Particle canvas ─────────────────────────────────────────────────────────
 function ParticleCanvas() {
@@ -32,7 +35,7 @@ function ParticleCanvas() {
       twinkleOffset: number;
     };
 
-    const particles: Particle[] = Array.from({ length: 55 }, () => ({
+    const particles: Particle[] = Array.from({ length: 30 }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
       vx: (Math.random() - 0.5) * 0.35,
@@ -142,6 +145,12 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen w-full flex items-center px-6 overflow-hidden">
+      {/* Aurora gradient background */}
+      <AuroraBackground />
+
+      {/* Meteor shower */}
+      <Meteors number={6} />
+
       {/* Parallax background glows */}
       <motion.div
         style={{ y: bgBlobY, x: blobMX }}
@@ -186,14 +195,29 @@ export default function HeroSection() {
             className="mb-6"
           >
             <h1 className="text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight leading-none text-center lg:text-left">
-              <span className="text-brand-text">Vera</span>
+              <span
+                className="text-brand-text shimmer-text"
+                style={{
+                  backgroundImage: "linear-gradient(110deg, #f0f4ff 40%, #ffffff 50%, #f0f4ff 60%)",
+                  backgroundSize: "200% 100%",
+                  WebkitBackgroundClip: "text",
+                  WebkitTextFillColor: "transparent",
+                  backgroundClip: "text",
+                  animation: "shimmer-sweep 4s linear infinite",
+                }}
+              >
+                Vera
+              </span>
               <motion.span
                 style={{
-                  background: "linear-gradient(90deg, #6b8fff 0%, #00e5ff 60%)",
+                  background: "linear-gradient(90deg, #6b8fff 0%, #00e5ff 60%, #6b8fff 100%)",
+                  backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
                   backgroundClip: "text",
                   display: "inline-block",
+                  animation: "shimmer-sweep 4s linear infinite",
+                  animationDelay: "0.5s",
                 }}
                 whileHover={{ scale: 1.04 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
@@ -201,6 +225,12 @@ export default function HeroSection() {
                 Fi
               </motion.span>
             </h1>
+            <style>{`
+              @keyframes shimmer-sweep {
+                0% { background-position: 200% 0; }
+                100% { background-position: -200% 0; }
+              }
+            `}</style>
           </motion.div>
 
           {/* Eyebrow */}
@@ -212,10 +242,18 @@ export default function HeroSection() {
           >
             <motion.span
               whileHover={{ scale: 1.03, borderColor: "rgba(0,229,255,0.5)" }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-cyan/30 bg-brand-cyan/5 text-brand-cyan text-xs font-medium tracking-widest uppercase cursor-default"
+              className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-cyan/30 bg-brand-cyan/5 text-brand-cyan text-xs font-medium tracking-widest uppercase cursor-default overflow-hidden"
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-glow-pulse" />
-              ZK-Verified Options on XRPL
+              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-glow-pulse relative" />
+              <span className="relative">ZK-Verified Options on XRPL</span>
+              <span
+                className="pointer-events-none absolute inset-0"
+                style={{
+                  background: "linear-gradient(110deg, transparent 30%, rgba(0,229,255,0.25) 50%, transparent 70%)",
+                  backgroundSize: "200% 100%",
+                  animation: "shimmer-sweep 3s linear infinite",
+                }}
+              />
             </motion.span>
           </motion.div>
 
@@ -247,14 +285,16 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.42 }}
             className="flex flex-col sm:flex-row gap-4 mb-14 justify-center lg:justify-start"
           >
-            <motion.div whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
-              <Link href="/login" className="btn-primary text-white w-full sm:w-auto">
-                Launch App
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </Link>
-            </motion.div>
+            <MagneticButton strength={0.35} className="w-full sm:w-auto">
+              <motion.div whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
+                <Link href="/login" className="btn-primary text-white w-full sm:w-auto">
+                  Launch App
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                  </svg>
+                </Link>
+              </motion.div>
+            </MagneticButton>
             <motion.a
               href="#how-it-works"
               whileHover={{ scale: 1.03, borderColor: "rgba(255,255,255,0.25)" }}
@@ -265,10 +305,10 @@ export default function HeroSection() {
             </motion.a>
             <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} className="w-full sm:w-auto">
               <Link
-                href="/executions"
+                href="/board"
                 className="inline-flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl font-semibold text-sm text-brand-cyan/70 hover:text-brand-cyan border border-brand-cyan/10 hover:border-brand-cyan/30 transition-all duration-200 w-full sm:w-auto"
               >
-                Live Feed
+                Option Board
               </Link>
             </motion.div>
           </motion.div>
@@ -278,20 +318,37 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.52 }}
-            className="grid grid-cols-3 gap-px bg-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden w-full max-w-md mx-auto lg:mx-0"
+            className="grid grid-cols-3 gap-px bg-white/[0.06] border border-white/[0.08] rounded-2xl overflow-hidden w-full max-w-md mx-auto lg:mx-0 relative"
           >
+            <div className="absolute inset-0 pointer-events-none opacity-50" style={{
+              background: "linear-gradient(110deg, transparent 30%, rgba(0,229,255,0.04) 50%, transparent 70%)",
+              backgroundSize: "200% 100%",
+              animation: "shimmer-sweep 5s linear infinite",
+            }} />
             {[
-              { label: "ZK Proof per Option", value: "1:1" },
-              { label: "Transactions per Lifecycle", value: "4" },
-              { label: "EVM Wallet Required", value: "Never" },
-            ].map((s) => (
+              { label: "ZK Proof per Option", value: "1:1", color: "#6b8fff", glow: "rgba(107,143,255,0.5)" },
+              { label: "Transactions / Lifecycle", value: "4", color: "#00e5ff", glow: "rgba(0,229,255,0.5)" },
+              { label: "EVM Wallet Required", value: "0", color: "#9b6bff", glow: "rgba(155,107,255,0.5)" },
+            ].map((s, i) => (
               <motion.div
                 key={s.label}
-                whileHover={{ backgroundColor: "rgba(107,143,255,0.06)" }}
-                className="bg-brand-bg px-4 py-4 text-center cursor-default transition-colors"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 + i * 0.1 }}
+                whileHover={{ backgroundColor: "rgba(107,143,255,0.08)", scale: 1.02 }}
+                className="relative bg-brand-bg px-4 py-4 text-center cursor-default transition-colors group"
               >
-                <p className="text-brand-blue font-bold text-xl">{s.value}</p>
-                <p className="text-brand-text/40 text-xs mt-0.5">{s.label}</p>
+                <p
+                  className="font-bold text-2xl font-mono"
+                  style={{ color: s.color, textShadow: `0 0 16px ${s.glow}` }}
+                >
+                  {s.value}
+                </p>
+                <p className="text-brand-text/40 text-[10px] mt-0.5 uppercase tracking-wider">{s.label}</p>
+                <div
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-px bg-brand-cyan group-hover:w-3/4 transition-all duration-500"
+                  style={{ boxShadow: "0 0 8px rgba(0,229,255,0.6)" }}
+                />
               </motion.div>
             ))}
           </motion.div>

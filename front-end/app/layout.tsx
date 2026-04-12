@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { WalletProvider } from "@/contexts/WalletContext";
+import SmoothScrollProvider from "@/components/SmoothScrollProvider";
+import ScrollProgress from "@/components/ScrollProgress";
 
 export const metadata: Metadata = {
-  title: "VeraFi — Verifiable Options Pricing",
+  title: "VeraFi — ZK Options on XRPL",
   description:
-    "The first options market maker that publishes a cryptographic proof of honest pricing on-chain with every single quote.",
+    "The first decentralized options protocol on XRPL. Black-Scholes pricing verified on-chain via Boundless ZK proofs. No vault, no intermediary, no trust assumption.",
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -23,8 +25,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-brand-bg text-brand-text antialiased">
-          <WalletProvider>{children}</WalletProvider>
-        </body>
+        <WalletProvider>
+          <ScrollProgress />
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </WalletProvider>
+      </body>
     </html>
   );
 }

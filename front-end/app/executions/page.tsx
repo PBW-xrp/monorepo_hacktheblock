@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { ArrowLeft, RefreshCw, ExternalLink, Shield, Activity } from "lucide-react";
+import { motion } from "framer-motion";
+import TxParticleField from "@/components/TxParticleField";
 
 // ---------------------------------------------------------------------------
 // Config
@@ -97,9 +99,12 @@ export default function ExecutionsPage() {
   }, [fetchEvents]);
 
   return (
-    <div className="min-h-screen bg-brand-bg text-brand-text">
+    <div className="min-h-screen bg-brand-bg text-brand-text relative overflow-hidden">
+      {/* Particle field overlay — fires bursts on new transactions */}
+      <TxParticleField transactions={data?.transactions ?? []} />
+
       {/* Nav */}
-      <nav className="border-b border-white/[0.06] px-6 py-4 flex items-center gap-4">
+      <nav className="relative border-b border-white/[0.06] px-6 py-4 flex items-center gap-4">
         <Link
           href="/"
           className="flex items-center gap-2 text-brand-text/50 hover:text-brand-text transition-colors text-sm"
@@ -113,9 +118,18 @@ export default function ExecutionsPage() {
         <span className="text-sm text-brand-text/50">Live Feed</span>
         <div className="ml-auto flex items-center gap-3">
           {data?.ledgerIndex && (
-            <span className="text-xs text-brand-text/30 font-mono hidden sm:block">
-              ledger #{data.ledgerIndex.toLocaleString()}
-            </span>
+            <motion.div
+              key={data.ledgerIndex}
+              initial={{ opacity: 0.5, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.4 }}
+              className="text-xs font-mono hidden sm:flex items-center gap-1.5"
+            >
+              <span className="text-brand-text/30">ledger</span>
+              <span className="text-brand-cyan/80" style={{ textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
+                #{data.ledgerIndex.toLocaleString()}
+              </span>
+            </motion.div>
           )}
           <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
             <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
@@ -124,7 +138,7 @@ export default function ExecutionsPage() {
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="relative max-w-5xl mx-auto px-6 py-10">
         {/* Header */}
         <div className="flex items-start justify-between mb-8">
           <div>

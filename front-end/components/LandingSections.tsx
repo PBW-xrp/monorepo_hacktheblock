@@ -3,6 +3,13 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger, useGSAP);
+}
 
 const steps = [
   {
@@ -32,8 +39,75 @@ const steps = [
 ];
 
 export function HowItWorks() {
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      // Animate the line drawing down as user scrolls through the section
+      gsap.fromTo(
+        ".timeline-line",
+        { scaleY: 0, transformOrigin: "top" },
+        {
+          scaleY: 1,
+          ease: "none",
+          scrollTrigger: {
+            trigger: container.current,
+            start: "top 70%",
+            end: "bottom 80%",
+            scrub: 1,
+          },
+        }
+      );
+
+      // Stagger reveal each step with scrub
+      gsap.utils.toArray<HTMLElement>(".timeline-step").forEach((step) => {
+        gsap.fromTo(
+          step,
+          { opacity: 0, x: -40, filter: "blur(8px)" },
+          {
+            opacity: 1,
+            x: 0,
+            filter: "blur(0px)",
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: step,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
+
+      // Pulse the step numbers as they enter view
+      gsap.utils.toArray<HTMLElement>(".timeline-number").forEach((num) => {
+        gsap.fromTo(
+          num,
+          { scale: 0.5, opacity: 0 },
+          {
+            scale: 1,
+            opacity: 1,
+            duration: 0.6,
+            ease: "back.out(2)",
+            scrollTrigger: {
+              trigger: num,
+              start: "top 85%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
+    },
+    { scope: container }
+  );
+
   return (
-    <section id="how-it-works" style={{ scrollMarginTop: "80px" }} className="px-6 pb-28 max-w-4xl mx-auto">
+    <section
+      ref={container}
+      id="how-it-works"
+      style={{ scrollMarginTop: "80px" }}
+      className="px-6 pb-28 max-w-4xl mx-auto"
+    >
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -45,28 +119,20 @@ export function HowItWorks() {
         <h2 className="text-3xl md:text-4xl font-bold text-brand-text tracking-tight">How it works</h2>
       </motion.div>
 
-      <ol className="relative border-l border-white/[0.08] space-y-10 ml-4">
-        {steps.map((item, i) => (
-          <motion.li
-            key={item.step}
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
-            transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
-            whileHover={{ x: 4 }}
-            className="ml-8 cursor-default"
-          >
-            <motion.span
-              whileHover={{ scale: 1.15 }}
-              transition={{ type: "spring", stiffness: 400, damping: 15 }}
-              className="absolute -left-4 flex items-center justify-center w-8 h-8 rounded-full border border-white/[0.1] bg-brand-bg text-xs font-bold font-mono"
-              style={{ color: item.colorHex }}
+      <ol className="relative space-y-10 ml-4">
+        {/* Animated timeline line */}
+        <span className="timeline-line absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-brand-blue via-brand-cyan to-brand-purple" />
+        {steps.map((item) => (
+          <li key={item.step} className="timeline-step ml-8 cursor-default relative">
+            <span
+              className="timeline-number absolute -left-12 flex items-center justify-center w-8 h-8 rounded-full border border-white/[0.1] bg-brand-bg text-xs font-bold font-mono"
+              style={{ color: item.colorHex, boxShadow: `0 0 16px ${item.colorHex}40` }}
             >
               {item.step}
-            </motion.span>
+            </span>
             <h3 className="text-brand-text font-semibold mb-1.5">{item.title}</h3>
             <p className="text-brand-text/50 text-sm leading-relaxed">{item.body}</p>
-          </motion.li>
+          </li>
         ))}
       </ol>
     </section>
