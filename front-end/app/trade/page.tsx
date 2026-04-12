@@ -3,6 +3,7 @@
 import { useState, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useWallet } from "@/contexts/WalletContext";
 import {
   ArrowLeft, Shield, Loader2, AlertCircle, ChevronDown,
   CheckCircle2, Clock, Zap, ExternalLink, Copy,
@@ -86,10 +87,6 @@ function fmt(n: number, decimals = 4) {
   });
 }
 
-function shortHash(h: string) {
-  return h.length > 20 ? h.slice(0, 10) + "…" + h.slice(-8) : h;
-}
-
 function toHex(str: string): string {
   return Array.from(str)
     .map((c) => c.charCodeAt(0).toString(16).padStart(2, "0"))
@@ -101,6 +98,7 @@ function toHex(str: string): string {
 // Page
 // ---------------------------------------------------------------------------
 export default function TradePage() {
+  const { state: walletState } = useWallet();
   const [form, setForm] = useState<FormState>({
     amount: "100",
     strike: DEFAULT_STRIKE,
@@ -162,52 +160,68 @@ export default function TradePage() {
   // ── Buy Option (Pay Premium) ────────────────────────────────────────────
   const handleBuy = useCallback(async () => {
     if (quoteState.status !== "success") return;
+    if (walletState.status !== "connected") {
+      setBuyState({ status: "error", message: "Connect a wallet first." });
+      return;
+    }
     const { intent } = quoteState;
+    const memoData = toHex(JSON.stringify(intent));
+    const memoType = toHex("application/json");
+    const tx = {
+      TransactionType: "Payment",
+      Amount: PREMIUM_DROPS,
+      Destination: "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe", // groth5 faucet wallet (always active)
+      NetworkID: 1256, // required for groth5 devnet
+      Memos: [{ Memo: { MemoType: memoType, MemoData: memoData } }],
+    };
 
     setBuyState({ status: "confirming" });
 
     try {
-      // Dynamic import to avoid SSR issues — wallet signing via Crossmark for now
-      // TODO: replace with xrpl-connect walletManager.signAndSubmit() when integrated
-      const { default: sdk } = await import("@crossmarkio/sdk");
+      let txHash = "";
 
-      const memoData = toHex(JSON.stringify(intent));
-      const memoType = toHex("application/json");
+      if (walletState.wallet === "otsu") {
+        const provider = (window as any).xrpl;
+        const { Client } = await import("xrpl");
+        const client = new Client("wss://groth5.devnet.rippletest.net:51233");
+        await client.connect();
+        // autofill adds Sequence, Fee, LastLedgerSequence, NetworkID from the live ledger
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const prepared = await client.autofill({ ...tx, Account: walletState.address } as any);
+        console.log("[Otsu] prepared tx:", JSON.stringify(prepared));
+        const signed = await provider.signTransaction(prepared);
+        const txBlob = signed?.tx_blob;
+        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
+        setBuyState({ status: "pending" });
+        const submitResult = await client.submitAndWait(txBlob);
+        await client.disconnect();
+        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
+        if (txResult && txResult !== "tesSUCCESS") {
+          throw new Error(`Transaction failed: ${txResult}`);
+        }
+        txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
 
-      setBuyState({ status: "pending" });
+      } else if (walletState.wallet === "crossmark") {
+        const { default: sdk } = await import("@crossmarkio/sdk");
+        setBuyState({ status: "pending" });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await sdk.methods.signAndSubmitAndWait(tx as any);
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const data = result?.response?.data as any;
+        txHash = data?.resp?.result?.hash || data?.resp?.hash || data?.hash || "confirmed";
 
-      const result = await sdk.methods.signAndSubmitAndWait({
-        TransactionType: "Payment",
-        Amount: PREMIUM_DROPS,
-        Destination: "rWriterAddressHere", // TODO: set writer address from option board
-        Memos: [
-          {
-            Memo: {
-              MemoType: memoType,
-              MemoData: memoData,
-            },
-          },
-        ],
-      });
+      } else {
+        throw new Error("Wallet not supported for signing.");
+      }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const data = result?.response?.data as any;
-      const txHash: string =
-        data?.resp?.result?.hash ||
-        data?.resp?.hash ||
-        data?.result?.hash ||
-        data?.hash ||
-        (result as any)?.hash ||
-        "";
-
-      setBuyState({ status: "success", txHash: txHash || "confirmed" });
+      setBuyState({ status: "success", txHash });
     } catch (err) {
       setBuyState({
         status: "error",
         message: err instanceof Error ? err.message : "Transaction failed.",
       });
     }
-  }, [quoteState]);
+  }, [quoteState, walletState]);
 
   const copyHash = (hash: string) => {
     navigator.clipboard.writeText(hash);

@@ -59,7 +59,7 @@ function txTypeBadge(type: string) {
     case "OfferCreate":
       return { label: "OFFER", color: "bg-brand-purple/10 text-brand-purple border-brand-purple/20" };
     default:
-      return { label: type.toUpperCase(), color: "bg-white/5 text-brand-text/50 border-white/10" };
+      return { label: type.toUpperCase(), color: "bg-white/5 text-brand-muted border-white/10" };
   }
 }
 
@@ -104,18 +104,18 @@ export default function ExecutionsPage() {
       <TxParticleField transactions={data?.transactions ?? []} />
 
       {/* Nav */}
-      <nav className="relative border-b border-white/[0.06] px-6 py-4 flex items-center gap-4">
+      <nav className="relative border-b border-black/10 px-6 py-4 flex items-center gap-4">
         <Link
           href="/"
-          className="flex items-center gap-2 text-brand-text/50 hover:text-brand-text transition-colors text-sm"
+          className="flex items-center gap-2 text-brand-muted hover:text-brand-text transition-colors text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Back
         </Link>
         <div className="h-4 w-px bg-white/10" />
         <span className="font-semibold text-brand-text">VeraFi</span>
-        <span className="text-brand-text/30">·</span>
-        <span className="text-sm text-brand-text/50">Live Feed</span>
+        <span className="text-brand-muted/60">·</span>
+        <span className="text-sm text-brand-muted">Live Feed</span>
         <div className="ml-auto flex items-center gap-3">
           {data?.ledgerIndex && (
             <motion.div
@@ -125,15 +125,15 @@ export default function ExecutionsPage() {
               transition={{ duration: 0.4 }}
               className="text-xs font-mono hidden sm:flex items-center gap-1.5"
             >
-              <span className="text-brand-text/30">ledger</span>
-              <span className="text-brand-cyan/80" style={{ textShadow: "0 0 8px rgba(0,229,255,0.4)" }}>
+              <span className="text-brand-muted/60">ledger</span>
+              <span className="text-brand-cyan/80" style={{ textShadow: "0 0 8px rgba(42,171,99,0.4)" }}>
                 #{data.ledgerIndex.toLocaleString()}
               </span>
             </motion.div>
           )}
-          <div className="flex items-center gap-2 bg-white/[0.04] border border-white/[0.08] rounded-full px-3 py-1">
+          <div className="flex items-center gap-2 bg-brand-bg border border-black/15 rounded-full px-3 py-1">
             <div className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
-            <span className="text-xs text-brand-text/50 font-mono">XRPL groth5</span>
+            <span className="text-xs text-brand-muted font-mono">XRPL groth5</span>
           </div>
         </div>
       </nav>
@@ -146,14 +146,14 @@ export default function ExecutionsPage() {
               <Activity className="w-6 h-6 text-brand-cyan" />
               Live Execution Feed
             </h1>
-            <p className="text-brand-text/40 text-sm mt-1">
+            <p className="text-brand-muted text-sm mt-1">
               Real-time transactions from XRPL groth5 devnet
             </p>
           </div>
           <button
             onClick={() => fetchEvents(true)}
             disabled={refreshing}
-            className="flex items-center gap-2 text-sm text-brand-text/50 hover:text-brand-text transition-colors glass-card px-4 py-2"
+            className="flex items-center gap-2 text-sm text-brand-muted hover:text-brand-text transition-colors glass-card px-4 py-2"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-brand-cyan" : ""}`} />
             {lastRefresh ? `Updated ${lastRefresh.toLocaleTimeString()}` : "Refresh"}
@@ -164,7 +164,7 @@ export default function ExecutionsPage() {
         <div className="glass-card px-5 py-3 flex items-center gap-3 mb-6 border border-brand-blue/10">
           <Shield className="w-4 h-4 text-brand-blue shrink-0" />
           <div className="flex-1 min-w-0">
-            <span className="text-xs text-brand-text/40">XRPL groth5 Devnet · </span>
+            <span className="text-xs text-brand-muted">XRPL groth5 Devnet · </span>
             <span className="font-mono text-xs text-brand-blue/80">
               wss://groth5.devnet.rippletest.net:51233
             </span>
@@ -173,7 +173,7 @@ export default function ExecutionsPage() {
             href={GROTH5_EXPLORER}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-brand-text/30 hover:text-brand-text/70 transition-colors shrink-0"
+            className="text-brand-muted/60 hover:text-brand-text/70 transition-colors shrink-0"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
@@ -183,26 +183,26 @@ export default function ExecutionsPage() {
         {loading ? (
           <div className="glass-card p-16 flex flex-col items-center gap-4">
             <div className="w-10 h-10 rounded-full border-2 border-brand-blue/30 border-t-brand-blue animate-spin" />
-            <p className="text-brand-text/40 text-sm">Querying XRPL groth5 devnet…</p>
+            <p className="text-brand-muted text-sm">Querying XRPL groth5 devnet…</p>
           </div>
         ) : error ? (
           <div className="glass-card p-8 flex flex-col items-center gap-3 border border-red-400/20">
             <p className="text-red-400 text-sm">{error}</p>
             <button
               onClick={() => fetchEvents()}
-              className="text-xs text-brand-text/50 hover:text-brand-text transition-colors underline"
+              className="text-xs text-brand-muted hover:text-brand-text transition-colors underline"
             >
               Try again
             </button>
           </div>
         ) : !data || data.transactions.length === 0 ? (
           <div className="glass-card p-16 flex flex-col items-center gap-4">
-            <div className="w-14 h-14 rounded-full bg-white/[0.03] border border-white/[0.08] flex items-center justify-center">
-              <Activity className="w-6 h-6 text-brand-text/20" />
+            <div className="w-14 h-14 rounded-full bg-brand-surface border border-black/15 flex items-center justify-center">
+              <Activity className="w-6 h-6 text-brand-muted/40" />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-brand-text/40">No transactions in latest ledger</p>
-              <p className="text-sm text-brand-text/20 mt-1">
+              <p className="font-semibold text-brand-muted">No transactions in latest ledger</p>
+              <p className="text-sm text-brand-muted/40 mt-1">
                 Transactions will appear here as they hit the groth5 devnet.
               </p>
             </div>
@@ -210,7 +210,7 @@ export default function ExecutionsPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {/* Table header */}
-            <div className="grid grid-cols-6 gap-4 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-brand-text/30">
+            <div className="grid grid-cols-6 gap-4 px-5 py-2 text-xs font-semibold uppercase tracking-widest text-brand-muted/60">
               <span>Type</span>
               <span>From</span>
               <span>To</span>
@@ -232,12 +232,12 @@ export default function ExecutionsPage() {
                   </span>
 
                   {/* From */}
-                  <span className="font-mono text-xs text-brand-text/50">
+                  <span className="font-mono text-xs text-brand-muted">
                     {shortAddr(tx.account)}
                   </span>
 
                   {/* To */}
-                  <span className="font-mono text-xs text-brand-text/50">
+                  <span className="font-mono text-xs text-brand-muted">
                     {tx.destination ? shortAddr(tx.destination) : "—"}
                   </span>
 
@@ -247,7 +247,7 @@ export default function ExecutionsPage() {
                   </span>
 
                   {/* Ledger */}
-                  <span className="font-mono text-xs text-brand-text/30">
+                  <span className="font-mono text-xs text-brand-muted/60">
                     #{tx.ledgerIndex}
                   </span>
 
@@ -265,7 +265,7 @@ export default function ExecutionsPage() {
               );
             })}
 
-            <p className="text-xs text-brand-text/20 text-center mt-2">
+            <p className="text-xs text-brand-muted/40 text-center mt-2">
               Auto-refreshes every 10s · {data.count} transaction{data.count !== 1 ? "s" : ""} in ledger #{data.ledgerIndex}
             </p>
           </div>

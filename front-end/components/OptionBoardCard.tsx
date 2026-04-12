@@ -3,6 +3,7 @@
 import { useRef, useState, useMemo } from "react";
 import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
 import { Clock, Wallet, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 import GenerativeOptionCard from "./GenerativeOptionCard";
 
 interface OptionBoardCardProps {
@@ -57,8 +58,8 @@ export default function OptionBoardCard({
   const rotateY = useSpring(useTransform(mouseX, [0, 280], [-6, 6]), { stiffness: 200, damping: 22 });
 
   const isCall = type === "CALL";
-  const accentColor = isCall ? "#00e5ff" : "#9b6bff";
-  const accentRgb = isCall ? "0,229,255" : "155,107,255";
+  const accentColor = isCall ? "#2aab63" : "#FF494A";
+  const accentRgb = isCall ? "42,171,99" : "255,73,74";
 
   // Compute moneyness
   const intrinsic = isCall ? Math.max(0, spot - strike) : Math.max(0, strike - spot);
@@ -108,7 +109,7 @@ export default function OptionBoardCard({
         rotateY,
         boxShadow: isHovered ? `0 0 48px rgba(${accentRgb},0.25)` : "none",
       }}
-      className="relative glass-card border border-white/[0.08] rounded-2xl overflow-hidden cursor-pointer group transition-shadow duration-300"
+      className="relative glass-card border border-black/15 rounded-2xl overflow-hidden cursor-pointer group transition-shadow duration-300"
     >
       {/* Animated rotating border conic gradient */}
       <div
@@ -165,7 +166,7 @@ export default function OptionBoardCard({
                 className={`text-[9px] font-bold uppercase tracking-widest px-1.5 py-0.5 rounded ${
                   isItm
                     ? "text-green-400 bg-green-400/10 border border-green-400/30"
-                    : "text-brand-text/40 bg-white/5 border border-white/10"
+                    : "text-brand-muted bg-white/5 border border-white/10"
                 }`}
               >
                 {moneynessLabel}
@@ -174,30 +175,30 @@ export default function OptionBoardCard({
             <p className="text-xl font-bold text-brand-text font-mono tracking-tight">
               ${strike.toFixed(2)}
             </p>
-            <p className="text-[10px] text-brand-text/30 font-mono">strike price</p>
+            <p className="text-[10px] text-brand-muted/60 font-mono">strike price</p>
           </div>
         </div>
 
         <ArrowUpRight
-          className="w-4 h-4 text-brand-text/30 group-hover:text-brand-cyan group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
+          className="w-4 h-4 text-brand-muted/60 group-hover:text-brand-cyan group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
         />
       </div>
 
       {/* Stats grid */}
       <div className="relative px-5 pb-4 grid grid-cols-2 gap-3" style={{ transform: "translateZ(10px)" }}>
-        <div className="bg-white/[0.03] rounded-lg px-3 py-2">
+        <div className="bg-brand-surface rounded-lg px-3 py-2">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <Wallet className="w-3 h-3 text-brand-text/30" />
-            <p className="text-[9px] text-brand-text/40 uppercase tracking-wider">Collateral</p>
+            <Wallet className="w-3 h-3 text-brand-muted/60" />
+            <p className="text-[9px] text-brand-muted uppercase tracking-wider">Collateral</p>
           </div>
           <p className="text-sm font-mono font-semibold text-brand-text">
-            {collateral.toLocaleString()} <span className="text-[10px] text-brand-text/40">XRP</span>
+            {collateral.toLocaleString()} <span className="text-[10px] text-brand-muted">XRP</span>
           </p>
         </div>
-        <div className="bg-white/[0.03] rounded-lg px-3 py-2">
+        <div className="bg-brand-surface rounded-lg px-3 py-2">
           <div className="flex items-center gap-1.5 mb-0.5">
-            <Clock className="w-3 h-3 text-brand-text/30" />
-            <p className="text-[9px] text-brand-text/40 uppercase tracking-wider">Expires in</p>
+            <Clock className="w-3 h-3 text-brand-muted/60" />
+            <p className="text-[9px] text-brand-muted uppercase tracking-wider">Expires in</p>
           </div>
           <p className="text-sm font-mono font-semibold" style={{ color: accentColor }}>
             {formatTimeLeft(expiryEpoch)}
@@ -206,9 +207,18 @@ export default function OptionBoardCard({
       </div>
 
       {/* Footer addresses */}
-      <div className="relative border-t border-white/[0.05] px-5 py-3 flex items-center justify-between text-[10px] font-mono text-brand-text/40">
+      <div className="relative border-t border-white/[0.05] px-5 py-3 flex items-center justify-between text-[10px] font-mono text-brand-muted">
         <span>writer <span className="text-brand-text/60">{shortAddr(writer)}</span></span>
         <span>buyer <span className="text-brand-text/60">{shortAddr(buyer)}</span></span>
+      </div>
+
+      <div className="relative border-t border-white/[0.05] px-5 py-3 flex items-center justify-end">
+        <Link
+          href={`/exercise?owner=${encodeURIComponent(writer)}&buyer=${encodeURIComponent(buyer)}`}
+          className="text-xs text-brand-cyan/70 hover:text-brand-cyan transition-colors font-medium"
+        >
+          Use in exercise →
+        </Link>
       </div>
 
       {/* Bottom glow line */}

@@ -24,7 +24,7 @@ function ParticleCanvas() {
     canvas.width = W;
     canvas.height = H;
 
-    const COLORS = ["#6b8fff", "#00e5ff", "#9b6bff"];
+    const COLORS = ["#2aab63", "#25292E", "#3c4242"];
 
     type Particle = {
       x: number; y: number;
@@ -59,7 +59,7 @@ function ParticleCanvas() {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 80) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(107,143,255,${0.06 * (1 - dist / 80)})`;
+            ctx.strokeStyle = `rgba(0,0,0,${0.04 * (1 - dist / 80)})`;
             ctx.lineWidth = 0.5;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -159,11 +159,11 @@ export default function HeroSection() {
       >
         <div
           className="absolute top-1/4 left-1/3 w-[700px] h-[700px] rounded-full opacity-[0.07] blur-3xl"
-          style={{ background: "radial-gradient(circle, #6b8fff 0%, #9b6bff 50%, transparent 80%)" }}
+          style={{ background: "radial-gradient(circle, rgba(42,171,99,0.1) 0%, rgba(0,0,0,0.03) 50%, transparent 80%)" }}
         />
         <div
           className="absolute top-1/2 right-1/4 w-[350px] h-[350px] rounded-full opacity-[0.06] blur-3xl"
-          style={{ background: "radial-gradient(circle, #00e5ff 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle, rgba(42,171,99,0.06) 0%, transparent 70%)" }}
         />
       </motion.div>
 
@@ -198,7 +198,7 @@ export default function HeroSection() {
               <span
                 className="text-brand-text shimmer-text"
                 style={{
-                  backgroundImage: "linear-gradient(110deg, #f0f4ff 40%, #ffffff 50%, #f0f4ff 60%)",
+                  backgroundImage: "linear-gradient(110deg, #25292E 40%, #3c4242 50%, #25292E 60%)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -210,7 +210,7 @@ export default function HeroSection() {
               </span>
               <motion.span
                 style={{
-                  background: "linear-gradient(90deg, #6b8fff 0%, #00e5ff 60%, #6b8fff 100%)",
+                  background: "linear-gradient(90deg, #2aab63 0%, #1d8a4e 60%, #2aab63 100%)",
                   backgroundSize: "200% 100%",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",
@@ -233,49 +233,16 @@ export default function HeroSection() {
             `}</style>
           </motion.div>
 
-          {/* Eyebrow */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="mb-5"
-          >
-            <motion.span
-              whileHover={{ scale: 1.03, borderColor: "rgba(0,229,255,0.5)" }}
-              className="relative inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-brand-cyan/30 bg-brand-cyan/5 text-brand-cyan text-xs font-medium tracking-widest uppercase cursor-default overflow-hidden"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-glow-pulse relative" />
-              <span className="relative">ZK-Verified Options on XRPL</span>
-              <span
-                className="pointer-events-none absolute inset-0"
-                style={{
-                  background: "linear-gradient(110deg, transparent 30%, rgba(0,229,255,0.25) 50%, transparent 70%)",
-                  backgroundSize: "200% 100%",
-                  animation: "shimmer-sweep 3s linear infinite",
-                }}
-              />
-            </motion.span>
-          </motion.div>
-
-          {/* Tagline */}
+          {/* Tagline — short, direct */}
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.25 }}
-            className="text-brand-text/60 text-lg md:text-xl max-w-lg leading-relaxed mb-3 text-center lg:text-left"
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-brand-muted text-lg md:text-xl max-w-md leading-relaxed mb-8 text-center lg:text-left"
           >
-            The first decentralized options protocol on XRPL.{" "}
-            <span className="text-brand-text/90 font-medium">Black-Scholes pricing verified on-chain via Boundless ZK proofs.</span>{" "}
-            No vault, no intermediary, no trust assumption.
-          </motion.p>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.35 }}
-            className="text-brand-text/35 text-sm mb-10 text-center lg:text-left"
-          >
-            Trustless Settlement · 4 Transactions · Fully On-Chain
+            ZK-verified options on XRPL.
+            <br />
+            No vault. No intermediary.
           </motion.p>
 
           {/* CTAs */}
@@ -326,9 +293,9 @@ export default function HeroSection() {
               animation: "shimmer-sweep 5s linear infinite",
             }} />
             {[
-              { label: "ZK Proof per Option", value: "1:1", color: "#6b8fff", glow: "rgba(107,143,255,0.5)" },
-              { label: "Transactions / Lifecycle", value: "4", color: "#00e5ff", glow: "rgba(0,229,255,0.5)" },
-              { label: "EVM Wallet Required", value: "0", color: "#9b6bff", glow: "rgba(155,107,255,0.5)" },
+              { label: "ZK Proof per Option", value: "1:1", color: "#2aab63", glow: "none" },
+              { label: "Transactions / Lifecycle", value: "4", color: "#25292E", glow: "none" },
+              { label: "EVM Wallet Required", value: "0", color: "#25292E", glow: "none" },
             ].map((s, i) => (
               <motion.div
                 key={s.label}
@@ -370,7 +337,7 @@ export default function HeroSection() {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-              className="absolute inset-6 rounded-full border border-brand-blue/10"
+              className="absolute inset-6 rounded-full border border-brand-blue/15"
             />
             <motion.div
               animate={{ rotate: -360 }}
@@ -381,7 +348,7 @@ export default function HeroSection() {
             {/* Center glow */}
             <div
               className="absolute inset-0 rounded-full blur-2xl opacity-20 pointer-events-none"
-              style={{ background: "radial-gradient(circle, #6b8fff 0%, #9b6bff 40%, transparent 70%)" }}
+              style={{ background: "radial-gradient(circle, rgba(42,171,99,0.15) 0%, rgba(0,0,0,0.04) 40%, transparent 70%)" }}
             />
 
             {/* Mouse-tracking wrapper (Y only, no keyframe here) */}
@@ -398,9 +365,9 @@ export default function HeroSection() {
                 <motion.div
                   animate={{
                     filter: [
-                      "drop-shadow(0 0 22px rgba(107,143,255,0.5))",
-                      "drop-shadow(0 0 48px rgba(0,229,255,0.8))",
-                      "drop-shadow(0 0 22px rgba(107,143,255,0.5))",
+                      "drop-shadow(0 0 16px rgba(42,171,99,0.3))",
+                      "drop-shadow(0 0 24px rgba(42,171,99,0.4))",
+                      "drop-shadow(0 0 16px rgba(42,171,99,0.3))",
                     ],
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { WalletProvider } from "@/contexts/WalletContext";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgress from "@/components/ScrollProgress";
 
@@ -24,8 +25,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-brand-bg text-brand-text antialiased">
-        <ScrollProgress />
-        <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        <WalletProvider>
+          <ScrollProgress />
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+        </WalletProvider>
       </body>
     </html>
   );

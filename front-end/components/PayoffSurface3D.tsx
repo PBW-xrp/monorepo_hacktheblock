@@ -262,7 +262,7 @@ function PayoffMesh({ spot, strike, isPut, premium, vol, rate, expiryYears, time
           side={THREE.DoubleSide}
           transparent
           opacity={0.85}
-          emissive="#0a0d14"
+          emissive="#eee9dd"
           emissiveIntensity={0.2}
           metalness={0.15}
           roughness={0.5}
@@ -271,7 +271,7 @@ function PayoffMesh({ spot, strike, isPut, premium, vol, rate, expiryYears, time
 
       <mesh geometry={geometry}>
         <meshBasicMaterial
-          color="#00e5ff"
+          color="#2aab63"
           wireframe
           transparent
           opacity={0.18}
@@ -282,7 +282,7 @@ function PayoffMesh({ spot, strike, isPut, premium, vol, rate, expiryYears, time
       <mesh position={[0, 0, sliceZ]}>
         <planeGeometry args={[10, 6]} />
         <meshBasicMaterial
-          color="#00e5ff"
+          color="#2aab63"
           transparent
           opacity={0.08}
           side={THREE.DoubleSide}
@@ -292,16 +292,16 @@ function PayoffMesh({ spot, strike, isPut, premium, vol, rate, expiryYears, time
       {/* Strike marker */}
       <mesh position={[0, 0, 0]}>
         <boxGeometry args={[0.04, 5, 0.04]} />
-        <meshStandardMaterial color="#9b6bff" emissive="#9b6bff" emissiveIntensity={1.5} />
+        <meshStandardMaterial color="#FF494A" emissive="#FF494A" emissiveIntensity={1.5} />
       </mesh>
       <Float speed={1.5} rotationIntensity={0} floatIntensity={0.2}>
         <mesh position={[0, 2.6, 0]}>
           <octahedronGeometry args={[0.12, 0]} />
-          <meshStandardMaterial color="#9b6bff" emissive="#9b6bff" emissiveIntensity={1.2} />
+          <meshStandardMaterial color="#FF494A" emissive="#FF494A" emissiveIntensity={1.2} />
         </mesh>
       </Float>
       <Billboard position={[0, 3.0, 0]}>
-        <Text fontSize={0.22} color="#9b6bff" anchorX="center" anchorY="middle" outlineWidth={0.008} outlineColor="#000000">
+        <Text fontSize={0.22} color="#FF494A" anchorX="center" anchorY="middle" outlineWidth={0.008} outlineColor="#000000">
           STRIKE ${strike.toFixed(2)}
         </Text>
       </Billboard>
@@ -309,10 +309,10 @@ function PayoffMesh({ spot, strike, isPut, premium, vol, rate, expiryYears, time
       {/* Breakeven */}
       <mesh position={[breakeven, 0, 0]}>
         <boxGeometry args={[0.025, 4, 0.025]} />
-        <meshBasicMaterial color="#00e5ff" transparent opacity={0.5} />
+        <meshBasicMaterial color="#2aab63" transparent opacity={0.5} />
       </mesh>
       <Billboard position={[breakeven, 2.4, 0]}>
-        <Text fontSize={0.16} color="#00e5ff" anchorX="center" anchorY="middle" outlineWidth={0.006} outlineColor="#000000">
+        <Text fontSize={0.16} color="#2aab63" anchorX="center" anchorY="middle" outlineWidth={0.006} outlineColor="#000000">
           BREAKEVEN
         </Text>
       </Billboard>
@@ -321,37 +321,37 @@ function PayoffMesh({ spot, strike, isPut, premium, vol, rate, expiryYears, time
       <Float speed={2} rotationIntensity={0} floatIntensity={0.2}>
         <mesh position={[currentX, currentY + 0.25, currentZ]}>
           <sphereGeometry args={[0.16, 32, 32]} />
-          <meshStandardMaterial color="#00e5ff" emissive="#00e5ff" emissiveIntensity={2} />
+          <meshStandardMaterial color="#2aab63" emissive="#2aab63" emissiveIntensity={2} />
         </mesh>
       </Float>
       <mesh position={[currentX, currentY + 0.25, currentZ]} rotation={[Math.PI / 2, 0, 0]}>
         <ringGeometry args={[0.22, 0.32, 32]} />
-        <meshBasicMaterial color="#00e5ff" transparent opacity={0.6} side={THREE.DoubleSide} />
+        <meshBasicMaterial color="#2aab63" transparent opacity={0.6} side={THREE.DoubleSide} />
       </mesh>
       <Billboard position={[currentX, currentY + 0.85, currentZ]}>
-        <Text fontSize={0.18} color="#00e5ff" anchorX="center" anchorY="middle" outlineWidth={0.008} outlineColor="#000000">
+        <Text fontSize={0.18} color="#2aab63" anchorX="center" anchorY="middle" outlineWidth={0.008} outlineColor="#000000">
           SPOT ${spot.toFixed(2)} · TODAY
         </Text>
       </Billboard>
 
       <Billboard position={[3.5, 0.4, currentZ]}>
-        <Text fontSize={0.14} color="#6b8fff" anchorX="left" anchorY="middle" outlineWidth={0.005} outlineColor="#000000" fillOpacity={0.7}>
+        <Text fontSize={0.14} color="#25292E" anchorX="left" anchorY="middle" outlineWidth={0.005} outlineColor="#000000" fillOpacity={0.7}>
           TODAY
         </Text>
       </Billboard>
       <Billboard position={[3.5, 0.4, -currentZ]}>
-        <Text fontSize={0.14} color="#00e5ff" anchorX="left" anchorY="middle" outlineWidth={0.005} outlineColor="#000000" fillOpacity={0.7}>
+        <Text fontSize={0.14} color="#2aab63" anchorX="left" anchorY="middle" outlineWidth={0.005} outlineColor="#000000" fillOpacity={0.7}>
           EXPIRY
         </Text>
       </Billboard>
 
       <Billboard position={[-5.5, 2.2, 0]}>
-        <Text fontSize={0.18} color="#00e5ff" anchorX="center" anchorY="middle" outlineWidth={0.006} outlineColor="#000000">
+        <Text fontSize={0.18} color="#2aab63" anchorX="center" anchorY="middle" outlineWidth={0.006} outlineColor="#000000">
           PROFIT
         </Text>
       </Billboard>
       <Billboard position={[-5.5, -1.6, 0]}>
-        <Text fontSize={0.18} color="#9b6bff" anchorX="center" anchorY="middle" outlineWidth={0.006} outlineColor="#000000">
+        <Text fontSize={0.18} color="#FF494A" anchorX="center" anchorY="middle" outlineWidth={0.006} outlineColor="#000000">
           LOSS
         </Text>
       </Billboard>
@@ -398,10 +398,10 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
   const totalMaxProfit = isFinite(maxProfit) ? maxProfit * quantity : Infinity;
   const hoverPnLTotal = hover ? hover.pnl * quantity : 0;
 
-  const popColor = pop >= 0.6 ? "#00e5ff" : pop >= 0.4 ? "#6b8fff" : "#9b6bff";
+  const popColor = pop >= 0.6 ? "#2aab63" : pop >= 0.4 ? "#25292E" : "#FF494A";
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden bg-gradient-to-br from-[#0a0d14] to-[#0d1325] border border-white/[0.06]">
+    <div className="relative w-full rounded-2xl overflow-hidden bg-[#e8e3d6] border border-black">
       {/* 3D canvas */}
       <div className="relative h-[320px]">
         <Canvas
@@ -410,11 +410,10 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
           dpr={[1, 2]}
         >
           <Suspense fallback={null}>
-            <ambientLight intensity={0.6} />
-            <pointLight position={[5, 8, 10]} intensity={1.4} color="#6b8fff" />
-            <pointLight position={[-5, -3, -10]} intensity={0.8} color="#9b6bff" />
-            <pointLight position={[0, 5, 5]} intensity={0.6} color="#00e5ff" />
-            <directionalLight position={[3, 5, 2]} intensity={0.5} />
+            <ambientLight intensity={1.2} />
+            <pointLight position={[5, 8, 10]} intensity={1} color="#ffffff" />
+            <pointLight position={[-5, -3, -10]} intensity={0.5} color="#ffffff" />
+            <directionalLight position={[3, 5, 2]} intensity={0.8} />
 
             <PayoffMesh
               spot={props.spot}
@@ -442,7 +441,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
         {/* Hover tooltip with greeks */}
         {hover && (
           <div
-            className="pointer-events-none absolute z-10 bg-[#0a0d14]/95 border border-brand-cyan/40 rounded-lg px-3 py-2.5 backdrop-blur-sm shadow-[0_0_20px_rgba(0,229,255,0.2)] font-mono text-xs"
+            className="pointer-events-none absolute z-10 bg-[#eee9dd] border-2 border-black rounded-rysk px-3 py-2.5 shadow-brutal-sm font-mono text-xs text-brand-text"
             style={{
               left: hover.screenX + 14,
               top: hover.screenY + 14,
@@ -450,7 +449,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
             }}
           >
             <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
-              <div className="col-span-2 flex items-center justify-between mb-1 pb-1 border-b border-white/10">
+              <div className="col-span-2 flex items-center justify-between mb-1 pb-1 border-b border-black/10">
                 <span className="text-brand-text/40 uppercase text-[9px] tracking-wider">Spot · T-minus</span>
                 <span className="text-brand-cyan">${hover.spotAtPoint.toFixed(3)} · {hover.daysToExpiry.toFixed(1)}d</span>
               </div>
@@ -459,7 +458,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
                 <span className="text-brand-text/40 text-[9px] uppercase tracking-wider">P&amp;L</span>
                 <span
                   className="font-bold"
-                  style={{ color: hover.pnl > 0 ? "#00e5ff" : hover.pnl < 0 ? "#9b6bff" : "#6b8fff" }}
+                  style={{ color: hover.pnl > 0 ? "#2aab63" : hover.pnl < 0 ? "#FF494A" : "#25292E" }}
                 >
                   {hover.pnl >= 0 ? "+" : ""}${hover.pnl.toFixed(4)}
                 </span>
@@ -469,13 +468,13 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
                 <span className="text-brand-text/40 text-[9px] uppercase tracking-wider">Total</span>
                 <span
                   className="font-bold"
-                  style={{ color: hoverPnLTotal > 0 ? "#00e5ff" : hoverPnLTotal < 0 ? "#9b6bff" : "#6b8fff" }}
+                  style={{ color: hoverPnLTotal > 0 ? "#2aab63" : hoverPnLTotal < 0 ? "#FF494A" : "#25292E" }}
                 >
                   {hoverPnLTotal >= 0 ? "+" : ""}${hoverPnLTotal.toFixed(2)}
                 </span>
               </div>
 
-              <div className="col-span-2 mt-1 pt-1 border-t border-white/10 grid grid-cols-2 gap-x-3 gap-y-0.5">
+              <div className="col-span-2 mt-1 pt-1 border-t border-black/10 grid grid-cols-2 gap-x-3 gap-y-0.5">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-brand-text/40 text-[9px] uppercase tracking-wider">Δ</span>
                   <span className="text-brand-text/80">{hover.delta.toFixed(3)}</span>
@@ -514,7 +513,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
         </div>
 
         {/* POP badge top-right */}
-        <div className="absolute top-3 right-3 bg-[#0a0d14]/90 border border-white/[0.08] rounded-lg px-3 py-2 backdrop-blur-sm">
+        <div className="absolute top-3 right-3 bg-[#eee9dd]/90 border border-white/[0.08] rounded-lg px-3 py-2 backdrop-blur-sm">
           <p className="text-[9px] uppercase tracking-wider text-brand-text/40 mb-0.5">Prob. Profit</p>
           <p
             className="text-xl font-bold font-mono leading-none"
@@ -526,7 +525,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
       </div>
 
       {/* Time scrubber + Quantity controls */}
-      <div className="px-5 py-4 border-t border-white/[0.06] bg-white/[0.02] flex flex-col gap-4">
+      <div className="px-5 py-4 border-t border-black/10 bg-white/[0.02] flex flex-col gap-4">
         {/* Time slice scrubber */}
         <div>
           <div className="flex items-center justify-between mb-2">
@@ -592,7 +591,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
           width: 16px;
           height: 16px;
           border-radius: 50%;
-          background: #00e5ff;
+          background: #2aab63;
           box-shadow: 0 0 12px rgba(0, 229, 255, 0.7);
           cursor: pointer;
         }
@@ -600,7 +599,7 @@ export default function PayoffSurface3D(props: PayoffSurfaceProps) {
           width: 16px;
           height: 16px;
           border-radius: 50%;
-          background: #00e5ff;
+          background: #2aab63;
           box-shadow: 0 0 12px rgba(0, 229, 255, 0.7);
           cursor: pointer;
           border: none;

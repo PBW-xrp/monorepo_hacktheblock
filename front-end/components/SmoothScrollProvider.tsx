@@ -15,22 +15,9 @@ function ScrollTriggerSync() {
 
   useEffect(() => {
     if (!lenis) return;
-
-    // Sync Lenis with ScrollTrigger
     const onScroll = () => ScrollTrigger.update();
     lenis.on("scroll", onScroll);
-
-    // Drive Lenis from gsap ticker for smooth integration
-    const tick = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-    gsap.ticker.add(tick);
-    gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      lenis.off("scroll", onScroll);
-      gsap.ticker.remove(tick);
-    };
+    return () => { lenis.off("scroll", onScroll); };
   }, [lenis]);
 
   return null;
@@ -41,11 +28,11 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
     <ReactLenis
       root
       options={{
-        duration: 1.2,
-        easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        duration: 2.0,
+        easing: (t: number) => 1 - Math.pow(1 - t, 5),
         smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 2,
+        wheelMultiplier: 0.4,
+        touchMultiplier: 0.8,
       }}
     >
       <ScrollTriggerSync />

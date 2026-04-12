@@ -23,7 +23,7 @@ export default function SuccessRipple({ triggerKey, className = "" }: SuccessRip
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 rounded-full"
         style={{
-          background: "radial-gradient(circle, rgba(0,229,255,0.6) 0%, rgba(0,229,255,0.2) 30%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(42,171,99,0.6) 0%, rgba(42,171,99,0.2) 30%, transparent 70%)",
         }}
       />
 
@@ -60,7 +60,7 @@ export default function SuccessRipple({ triggerKey, className = "" }: SuccessRip
             transition={{ duration: 1, ease: "easeOut" }}
             className="absolute top-1/2 left-1/2 w-1.5 h-1.5 rounded-full bg-brand-cyan"
             style={{
-              boxShadow: "0 0 12px rgba(0,229,255,0.8)",
+              boxShadow: "0 0 12px rgba(42,171,99,0.8)",
             }}
           />
         );

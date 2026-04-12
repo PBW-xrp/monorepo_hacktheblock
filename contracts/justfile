@@ -1,0 +1,19 @@
+check:
+    cargo check --workspace
+
+build-guest:
+    cargo build -p verafi-pricer-builder
+
+build-escrow:
+    cargo build -p verafi-escrow-verifier --release --target wasm32v1-none
+
+build: build-guest build-escrow
+
+prove *args:
+    cargo run -p verafi-zk-host -- {{ args }}
+
+setup:
+    rustup target add wasm32v1-none
+
+clean:
+    cargo clean

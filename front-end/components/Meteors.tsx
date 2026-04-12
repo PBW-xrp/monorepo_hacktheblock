@@ -27,7 +27,7 @@ export default function Meteors({ number = 20, className = "" }: MeteorsProps) {
       {meteors.map((m) => (
         <span
           key={m.id}
-          className="absolute h-0.5 w-0.5 rounded-full bg-brand-cyan shadow-[0_0_0_1px_#00e5ff10] rotate-[215deg]"
+          className="absolute h-0.5 w-0.5 rounded-full bg-brand-text/40 rotate-[215deg]"
           style={{
             top: `${m.top}%`,
             left: `${m.left}%`,
@@ -38,7 +38,7 @@ export default function Meteors({ number = 20, className = "" }: MeteorsProps) {
             animationTimingFunction: "linear",
           }}
         >
-          <span className="absolute top-1/2 left-0 h-[1px] w-[60px] -translate-y-1/2 bg-gradient-to-r from-brand-cyan to-transparent" />
+          <span className="absolute top-1/2 left-0 h-[1px] w-[60px] -translate-y-1/2 bg-gradient-to-r from-brand-text/30 to-transparent" />
         </span>
       ))}
 

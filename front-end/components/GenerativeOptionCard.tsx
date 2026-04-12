@@ -40,8 +40,8 @@ export default function GenerativeOptionCard({
     const rand = mulberry32(seed);
 
     const center = size / 2;
-    const baseColor = isPut ? "#9b6bff" : "#00e5ff";
-    const accentColor = isPut ? "#6b8fff" : "#6b8fff";
+    const baseColor = isPut ? "#FF494A" : "#2aab63";
+    const accentColor = isPut ? "#25292E" : "#25292E";
 
     // Generate orbits — count and complexity based on vol
     const orbitCount = 3 + Math.floor((vol / 10000) * 4);
@@ -72,7 +72,7 @@ export default function GenerativeOptionCard({
     <motion.div
       whileHover={{ scale: 1.04, rotate: isPut ? -1 : 1 }}
       transition={{ type: "spring", stiffness: 300, damping: 18 }}
-      className="relative inline-block rounded-2xl overflow-hidden bg-gradient-to-br from-[#0a0d14] to-[#0d1325] border border-white/10"
+      className="relative inline-block overflow-hidden bg-brand-bg border-2 border-black shadow-brutal-sm"
       style={{ width: size, height: size }}
     >
       {/* Background radial glow */}
@@ -160,14 +160,14 @@ export default function GenerativeOptionCard({
         />
       </svg>
 
-      {/* Footer label */}
-      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-gradient-to-t from-black/80 to-transparent">
-        <div className="flex items-center justify-between text-[10px] font-mono">
-          <span className={isPut ? "text-brand-purple" : "text-brand-cyan"}>
+      {/* Footer label — solid bg, high contrast */}
+      <div className="absolute bottom-0 left-0 right-0 px-3 py-2 bg-brand-bg border-t-2 border-black">
+        <div className="flex items-center justify-between text-xs font-mono font-medium">
+          <span className={isPut ? "text-brand-red" : "text-brand-green"}>
             {isPut ? "PUT" : "CALL"}
           </span>
-          <span className="text-brand-text/60">${strike.toFixed(2)}</span>
-          <span className="text-brand-text/40">{expiryDays}d</span>
+          <span className="text-brand-text">${strike.toFixed(2)}</span>
+          <span className="text-brand-text">{expiryDays}d</span>
         </div>
       </div>
     </motion.div>

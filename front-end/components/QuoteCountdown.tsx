@@ -31,9 +31,9 @@ export default function QuoteCountdown({ validUntil, duration = 30000 }: QuoteCo
 
   // Color shifts as time runs out: cyan → blue → purple → red
   const color =
-    fraction > 0.5 ? "#00e5ff" :
-    fraction > 0.3 ? "#6b8fff" :
-    fraction > 0.15 ? "#9b6bff" :
+    fraction > 0.5 ? "#2aab63" :
+    fraction > 0.3 ? "#25292E" :
+    fraction > 0.15 ? "#FF494A" :
     "#ff5577";
 
   const expired = remaining <= 0;

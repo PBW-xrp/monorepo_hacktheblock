@@ -14,27 +14,27 @@ if (typeof window !== "undefined") {
 const steps = [
   {
     step: "01",
-    colorHex: "#6b8fff",
-    title: "Create an Option",
-    body: "The writer locks collateral in a ZK Smart Escrow on XRPL — specifying strike, expiry, and the buyer's address.",
+    colorHex: "#25292E",
+    title: "Lock collateral",
+    body: "Writer deploys a ZK Smart Escrow. Buyer is the destination.",
   },
   {
     step: "02",
-    colorHex: "#00e5ff",
-    title: "ZK Pricing",
-    body: "Black-Scholes pricing runs inside a RISC Zero zkVM. The computation produces a Groth16 proof that the math is correct — verifiable by anyone.",
+    colorHex: "#2aab63",
+    title: "Pay premium",
+    body: "Buyer sends a single XRPL Payment to the writer.",
   },
   {
     step: "03",
-    colorHex: "#9b6bff",
-    title: "On-Chain Settlement",
-    body: "The ZK proof is submitted as memos in an EscrowFinish transaction. The XRPL Smart Escrow verifies the proof on-chain and releases funds to the buyer.",
+    colorHex: "#2aab63",
+    title: "Prove & settle",
+    body: "Groth16 ZK proof submitted on-chain. Escrow verifies and releases.",
   },
   {
     step: "04",
-    colorHex: "#6b8fff",
-    title: "Trustless & Native",
-    body: "Everything happens on XRPL. 4 transactions per option lifecycle. No bridge, no EVM, no intermediary.",
+    colorHex: "#FF494A",
+    title: "Or expire",
+    body: "Out of the money? EscrowCancel returns collateral to writer.",
   },
 ];
 
@@ -115,7 +115,7 @@ export function HowItWorks() {
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
-        <p className="text-brand-text/40 text-sm uppercase tracking-widest font-medium mb-3">The Flow</p>
+        <p className="text-brand-muted text-sm uppercase tracking-widest font-medium mb-3">The Flow</p>
         <h2 className="text-3xl md:text-4xl font-bold text-brand-text tracking-tight">How it works</h2>
       </motion.div>
 
@@ -125,13 +125,13 @@ export function HowItWorks() {
         {steps.map((item) => (
           <li key={item.step} className="timeline-step ml-8 cursor-default relative">
             <span
-              className="timeline-number absolute -left-12 flex items-center justify-center w-8 h-8 rounded-full border border-white/[0.1] bg-brand-bg text-xs font-bold font-mono"
+              className="timeline-number absolute -left-12 flex items-center justify-center w-8 h-8 rounded-full border-2 border-black bg-brand-bg text-xs font-bold font-mono"
               style={{ color: item.colorHex, boxShadow: `0 0 16px ${item.colorHex}40` }}
             >
               {item.step}
             </span>
             <h3 className="text-brand-text font-semibold mb-1.5">{item.title}</h3>
-            <p className="text-brand-text/50 text-sm leading-relaxed">{item.body}</p>
+            <p className="text-brand-muted text-sm leading-relaxed">{item.body}</p>
           </li>
         ))}
       </ol>
@@ -144,36 +144,36 @@ export function HowItWorks() {
 const problems = [
   {
     icon: "👁️",
-    title: "Black-box pricing",
-    body: "Market makers quote options from hidden models. You have no way to know if the spread is fair or if the model was manipulated for the trade.",
+    title: "Hidden pricing",
+    body: "No way to verify if the spread is fair.",
   },
   {
     icon: "🔒",
-    title: "Trust assumed, not earned",
-    body: "Every options platform asks you to trust them. There is no verifiable record that the price you paid reflects an honest computation.",
+    title: "Trust required",
+    body: "No proof the computation was honest.",
   },
   {
     icon: "🌉",
-    title: "XRP locked out",
-    body: "Existing DeFi options markets require EVM wallets and wrapped assets. XRP holders face bridges, gas fees, and custodial risks just to access a quote.",
+    title: "XRP excluded",
+    body: "Options need EVM wallets and bridges.",
   },
 ];
 
 const solutions = [
   {
     icon: "🔐",
-    title: "ZK-verified pricing",
-    body: "Every quote is computed inside a RISC Zero zkVM. A Groth16 proof guarantees the Black-Scholes math is correct — verifiable by anyone, unfakeable.",
+    title: "ZK-verified",
+    body: "Groth16 proof guarantees honest pricing.",
   },
   {
     icon: "⛓️",
-    title: "On-chain verification",
-    body: "The ZK proof is verified directly by the XRPL Smart Escrow. No oracle to trust, no off-chain server — the ledger itself validates the computation.",
+    title: "On-chain verified",
+    body: "Smart Escrow validates the proof directly.",
   },
   {
     icon: "⚡",
-    title: "Native XRPL settlement",
-    body: "Connect via Otsu, Crossmark, or Xaman. Collateral locked in escrow, premium paid via Payment, settlement via ZK proof. 4 transactions, fully trustless.",
+    title: "4 transactions",
+    body: "Create, pay, settle or cancel. Fully native.",
   },
 ];
 
@@ -188,7 +188,7 @@ export function ProblemSolution() {
         transition={{ duration: 0.5 }}
         className="text-center mb-14"
       >
-        <p className="text-brand-text/40 text-sm uppercase tracking-widest font-medium mb-3">The Case for VeraFi</p>
+        <p className="text-brand-muted text-sm uppercase tracking-widest font-medium mb-3">The Case for VeraFi</p>
         <h2 className="text-3xl md:text-4xl font-bold text-brand-text tracking-tight">
           Why this matters
         </h2>
@@ -207,8 +207,8 @@ export function ProblemSolution() {
         >
           <motion.div
             className="rounded-2xl p-7 h-full"
-            style={{ background: "linear-gradient(135deg, rgba(30,12,12,0.98) 0%, rgba(18,12,12,0.98) 100%)" }}
-            whileHover={{ background: "linear-gradient(135deg, rgba(36,14,14,0.98) 0%, rgba(22,14,14,0.98) 100%)" }}
+            style={{ background: "#eee9dd" }}
+            whileHover={{ background: "#e8e3d6" }}
             transition={{ duration: 0.25 }}
           >
             <div className="flex items-center gap-3 mb-6">
@@ -247,19 +247,19 @@ export function ProblemSolution() {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: "-40px" }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          whileHover={{ y: -4, boxShadow: "0 0 48px rgba(107,143,255,0.18)" }}
+          whileHover={{ y: -4, boxShadow: "0 0 48px rgba(42,171,99,0.18)" }}
           className="rounded-2xl p-px cursor-default"
-          style={{ background: "linear-gradient(135deg, rgba(107,143,255,0.4) 0%, rgba(0,229,255,0.3) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgba(42,171,99,0.4) 0%, rgba(42,171,99,0.3) 100%)" }}
         >
           <motion.div
             className="rounded-2xl p-7 h-full"
-            style={{ background: "linear-gradient(135deg, rgba(10,16,32,0.98) 0%, rgba(10,20,28,0.98) 100%)" }}
-            whileHover={{ background: "linear-gradient(135deg, rgba(13,20,42,0.98) 0%, rgba(10,24,34,0.98) 100%)" }}
+            style={{ background: "#eee9dd" }}
+            whileHover={{ background: "#e8e3d6" }}
             transition={{ duration: 0.25 }}
           >
             <div className="flex items-center gap-3 mb-6">
               <motion.span
-                whileHover={{ scale: 1.06, borderColor: "rgba(107,143,255,0.6)" }}
+                whileHover={{ scale: 1.06, borderColor: "rgba(42,171,99,0.6)" }}
                 transition={{ type: "spring", stiffness: 400, damping: 18 }}
                 className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full border border-brand-blue/30 text-brand-blue/80 bg-brand-blue/5 cursor-default"
               >
@@ -301,12 +301,12 @@ export function CTABanner() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="max-w-4xl mx-auto rounded-3xl p-px"
         style={{
-          background: "linear-gradient(135deg, rgba(107,143,255,0.4) 0%, rgba(155,107,255,0.4) 50%, rgba(0,229,255,0.4) 100%)",
+          background: "linear-gradient(135deg, rgba(42,171,99,0.4) 0%, rgba(255,73,74,0.4) 50%, rgba(42,171,99,0.4) 100%)",
         }}
       >
         <div
           className="rounded-3xl px-8 py-14 text-center"
-          style={{ background: "linear-gradient(135deg, rgba(10,13,20,0.98) 0%, rgba(20,24,40,0.98) 100%)" }}
+          style={{ background: "#eee9dd" }}
         >
           <motion.h2
             initial={{ opacity: 0, y: 16 }}
@@ -322,7 +322,7 @@ export function CTABanner() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-brand-text/50 mb-8 max-w-lg mx-auto"
+            className="text-brand-muted mb-8 max-w-lg mx-auto"
           >
             Connect your XRPL wallet and get a verifiably fair option quote in seconds.
           </motion.p>
@@ -364,7 +364,7 @@ export function FeaturesHeader() {
       style={{ y, opacity }}
       className="text-center mb-12"
     >
-      <p className="text-brand-text/40 text-sm uppercase tracking-widest font-medium mb-3">Why VeraFi</p>
+      <p className="text-brand-muted text-sm uppercase tracking-widest font-medium mb-3">Why VeraFi</p>
       <h2 className="text-3xl md:text-4xl font-bold text-brand-text tracking-tight">
         Trust built into every quote
       </h2>

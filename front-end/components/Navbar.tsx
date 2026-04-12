@@ -3,44 +3,47 @@ import Link from "next/link";
 
 export default function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/[0.06]"
-      style={{ background: "rgba(10,13,20,0.85)", backdropFilter: "blur(16px)" }}
+    <nav
+      className="fixed top-0 left-0 right-0 z-50 border-b-2 border-black bg-[#eee9dd]"
     >
-      <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="relative w-8 h-8">
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="relative w-6 h-6">
             <Image
               src="/Verafi_Hero_Logo.png"
               alt="VeraFi"
               fill
-              className="object-contain rounded-md"
+              className="object-contain"
             />
           </div>
-          <span className="font-semibold text-brand-text tracking-tight">
-            Vera<span className="text-brand-blue">Fi</span>
+          <span className="font-mono font-medium text-brand-text text-base tracking-tight">
+            vera<span className="text-brand-green font-bold">fi</span>
           </span>
         </Link>
 
-        {/* Nav links */}
-        <div className="hidden md:flex items-center gap-8">
-          <a
-            href="#features"
-            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
-          >
-            Features
-          </a>
-          <a
-            href="#how-it-works"
-            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
-          >
-            How It Works
-          </a>
+        {/* Nav links — mono uppercase like Rysk */}
+        <div className="hidden md:flex items-center gap-1">
+          {[
+            { label: "Earn", href: "/trade" },
+            { label: "Write", href: "/write" },
+            { label: "Board", href: "/board" },
+            { label: "Exercise", href: "/exercise" },
+            { label: "Feed", href: "/executions" },
+          ].map((link) => (
+            <Link
+              key={link.label}
+              href={link.href}
+              className="px-3 py-1 text-sm font-mono font-medium text-brand-muted hover:text-brand-text hover:bg-black/5 transition-colors duration-100"
+            >
+              {link.label}
+            </Link>
+          ))}
         </div>
 
         {/* CTA */}
-        <Link href="/login" className="btn-primary text-white">
-          Launch App
+        <Link href="/login" className="btn-primary text-sm py-2 px-5">
+          Connect
         </Link>
       </div>
     </nav>

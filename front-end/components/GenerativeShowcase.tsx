@@ -19,15 +19,14 @@ export default function GenerativeShowcase() {
         transition={{ duration: 0.5 }}
         className="text-center mb-12"
       >
-        <p className="text-brand-text/40 text-sm uppercase tracking-widest font-medium mb-3">
+        <p className="text-brand-muted text-sm uppercase tracking-widest font-medium mb-3">
           Every option, unique
         </p>
         <h2 className="text-3xl md:text-4xl font-bold text-brand-text tracking-tight mb-3">
-          Generative Visual Identity
+          Every option, unique
         </h2>
-        <p className="text-brand-text/50 text-sm max-w-xl mx-auto">
-          Each option contract gets its own deterministic art piece — derived from strike,
-          volatility, expiry, and type. Same params, same art. Forever.
+        <p className="text-brand-muted text-sm max-w-md mx-auto">
+          Deterministic art from strike, vol, expiry, and type.
         </p>
       </motion.div>
 

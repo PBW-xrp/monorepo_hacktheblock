@@ -17,7 +17,7 @@ export default function LoginPage() {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full opacity-15 blur-3xl"
           style={{
             background:
-              "radial-gradient(circle, #9b6bff 0%, #6b8fff 40%, transparent 75%)",
+              "radial-gradient(circle, #FF494A 0%, #25292E 40%, transparent 75%)",
           }}
         />
       </div>
@@ -25,7 +25,7 @@ export default function LoginPage() {
       {/* Back link */}
       <Link
         href="/"
-        className="absolute top-6 left-6 flex items-center gap-2 text-sm text-brand-text/40 hover:text-brand-text/80 transition-colors z-20"
+        className="absolute top-6 left-6 flex items-center gap-2 text-sm text-brand-muted hover:text-brand-text/80 transition-colors z-20"
       >
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
@@ -54,7 +54,7 @@ export default function LoginPage() {
                 fill
                 priority
                 className="object-contain rounded-2xl"
-                style={{ filter: "drop-shadow(0 0 24px rgba(107,143,255,0.6))" }}
+                style={{ filter: "drop-shadow(0 0 24px rgba(42,171,99,0.6))" }}
               />
             </div>
           </div>

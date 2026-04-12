@@ -1,0 +1,28 @@
+# Rust
+**/target/
+Cargo.lock
+
+# zk proof artifacts
+*.receipt
+*.seal
+*.journal
+*.proof
+artifacts/
+out/
+
+# env and wallet files
+.env
+.env.*
+!.env.example
+*.seed
+*.key
+*.pem
+*.json
+!contracts/tests/fixtures/*.json
+!.vscode/*.json
+
+# local tooling
+.DS_Store
+.claude/
+.vercel/
+node_modules/

@@ -36,14 +36,14 @@ interface AmbientStar {
 }
 
 const COLOR_MAP: Record<string, string> = {
-  EscrowCreate: "#00e5ff",   // cyan
+  EscrowCreate: "#2aab63",   // cyan
   EscrowFinish: "#00ff9d",   // green
   EscrowCancel: "#ff5577",   // red
-  Payment: "#6b8fff",        // blue
-  OfferCreate: "#9b6bff",    // purple
+  Payment: "#25292E",        // blue
+  OfferCreate: "#FF494A",    // purple
 };
 
-const DEFAULT_COLOR = "#6b8fff";
+const DEFAULT_COLOR = "#25292E";
 
 export default function TxParticleField({ transactions, className = "" }: TxParticleFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);

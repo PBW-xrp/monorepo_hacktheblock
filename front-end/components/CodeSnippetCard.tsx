@@ -5,18 +5,18 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 const CODE_LINES = [
-  { text: "// On-chain ZK verifier (Rust → wasm32v1-none)", color: "text-brand-text/40" },
+  { text: "// On-chain ZK verifier (Rust → wasm32v1-none)", color: "text-brand-muted" },
   { text: "#[unsafe(no_mangle)]", color: "text-brand-purple" },
   { text: "pub extern \"C\" fn finish() -> i32 {", color: "text-brand-cyan" },
   { text: "    let journal: [u8; 38] = get_memo(0);", color: "text-brand-text/80" },
   { text: "    let seal: [u8; 256] = get_memo(1);", color: "text-brand-text/80" },
   { text: "", color: "" },
-  { text: "    // Verify Groth16 proof against options pricer", color: "text-brand-text/40" },
+  { text: "    // Verify Groth16 proof against options pricer", color: "text-brand-muted" },
   { text: "    let proof = Proof::from_seal_bytes(&seal)?;", color: "text-brand-text/80" },
   { text: "    let digest = risc0::hash_journal(&journal);", color: "text-brand-text/80" },
   { text: "    risc0::verify(&proof, &OPTIONS_PRICER_ID, &digest)?;", color: "text-brand-cyan" },
   { text: "", color: "" },
-  { text: "    // Cross-check journal vs agreed params", color: "text-brand-text/40" },
+  { text: "    // Cross-check journal vs agreed params", color: "text-brand-muted" },
   { text: "    let strike = u64::from_le_bytes(journal[8..16]);", color: "text-brand-text/80" },
   { text: "    let is_itm = journal[37];", color: "text-brand-text/80" },
   { text: "    assert_eq!(strike, get_escrow_strike());", color: "text-brand-text/80" },
@@ -50,15 +50,14 @@ export default function CodeSnippetCard() {
         transition={{ duration: 0.5 }}
         className="text-center mb-10"
       >
-        <p className="text-brand-text/40 text-sm uppercase tracking-widest font-medium mb-3">
+        <p className="text-brand-muted text-sm uppercase tracking-widest font-medium mb-3">
           The verifier
         </p>
         <h2 className="text-3xl md:text-4xl font-bold text-brand-text tracking-tight mb-3">
-          On-chain ZK verification
+          On-chain verifier
         </h2>
-        <p className="text-brand-text/50 text-sm max-w-xl mx-auto">
-          The Smart Escrow Wasm reads the ZK proof from transaction memos and verifies it
-          against the options pricer image ID. No off-chain trust, just math.
+        <p className="text-brand-muted text-sm max-w-md mx-auto">
+          The escrow reads the ZK proof and verifies it. No trust, just math.
         </p>
       </motion.div>
 
@@ -73,19 +72,19 @@ export default function CodeSnippetCard() {
         <div
           className="absolute -inset-4 rounded-3xl opacity-30 blur-2xl"
           style={{
-            background: "radial-gradient(ellipse at center, rgba(0,229,255,0.4), rgba(155,107,255,0.2), transparent)",
+            background: "radial-gradient(ellipse at center, rgba(42,171,99,0.4), rgba(255,73,74,0.2), transparent)",
           }}
         />
 
-        <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] bg-[#0a0d14]/95 backdrop-blur-sm shadow-[0_0_60px_rgba(0,229,255,0.08)]">
+        <div className="relative rounded-2xl overflow-hidden border border-black/15 bg-[#eee9dd]/95 backdrop-blur-sm shadow-[0_0_60px_rgba(42,171,99,0.08)]">
           {/* Window header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.06] bg-white/[0.02]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-black/10 bg-white/[0.02]">
             <div className="flex items-center gap-2">
               <span className="w-3 h-3 rounded-full bg-red-400/70" />
               <span className="w-3 h-3 rounded-full bg-yellow-400/70" />
               <span className="w-3 h-3 rounded-full bg-green-400/70" />
             </div>
-            <span className="font-mono text-xs text-brand-text/40">escrow/src/lib.rs</span>
+            <span className="font-mono text-xs text-brand-muted">escrow/src/lib.rs</span>
             <div className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan animate-pulse" />
               <span className="text-[10px] text-brand-cyan/70 font-mono">groth5</span>
@@ -105,7 +104,7 @@ export default function CodeSnippetCard() {
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 className="flex items-start gap-4"
               >
-                <span className="text-brand-text/20 select-none w-6 text-right tabular-nums">
+                <span className="text-brand-muted/40 select-none w-6 text-right tabular-nums">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span className={line.color || "text-brand-text/60"}>
@@ -119,7 +118,7 @@ export default function CodeSnippetCard() {
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 1, repeat: Infinity }}
                 className="inline-block w-2 h-3 bg-brand-cyan ml-2 align-middle"
-                style={{ boxShadow: "0 0 8px rgba(0,229,255,0.8)" }}
+                style={{ boxShadow: "0 0 8px rgba(42,171,99,0.8)" }}
               />
             )}
           </div>

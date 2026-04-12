@@ -60,10 +60,10 @@ interface TooltipPayload {
 function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: TooltipPayload[]; label?: number }) {
   if (!active || !payload || !payload.length) return null;
   return (
-    <div className="bg-[#0a0d14]/95 border border-white/10 rounded-lg px-3 py-2 backdrop-blur-sm shadow-xl">
-      <p className="text-[10px] text-brand-text/40 font-mono uppercase">spot</p>
+    <div className="bg-[#eee9dd]/95 border border-white/10 rounded-lg px-3 py-2 backdrop-blur-sm shadow-xl">
+      <p className="text-[10px] text-brand-muted font-mono uppercase">spot</p>
       <p className="text-xs text-brand-cyan font-mono font-semibold">${typeof label === "number" ? label.toFixed(2) : label}</p>
-      <p className="text-[10px] text-brand-text/40 font-mono uppercase mt-1">value</p>
+      <p className="text-[10px] text-brand-muted font-mono uppercase mt-1">value</p>
       <p className="text-xs text-brand-text font-mono font-semibold">{payload[0]?.value?.toFixed(4)}</p>
     </div>
   );
@@ -99,20 +99,20 @@ export default function GreeksDashboard({
   // Delta gauge data: |delta| as % of 1 (max sensitivity)
   const deltaPct = Math.min(100, Math.abs(delta) * 100);
   const deltaGaugeData = [
-    { name: "delta", value: deltaPct, fill: "#00e5ff" },
+    { name: "delta", value: deltaPct, fill: "#2aab63" },
   ];
 
   // Vega: scale to a percentage (cap at ~0.5 = max for visualization)
   const vegaScaled = Math.min(100, Math.abs(vega) * 200);
   const vegaGaugeData = [
-    { name: "vega", value: vegaScaled, fill: "#9b6bff" },
+    { name: "vega", value: vegaScaled, fill: "#FF494A" },
   ];
 
   return (
     <div className="glass-card p-5 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-widest text-brand-text/40">Greeks</p>
-        <p className="text-[10px] text-brand-text/30 font-mono">spot ${spot.toFixed(2)} · strike ${strike.toFixed(2)}</p>
+        <p className="text-xs font-semibold uppercase tracking-widest text-brand-muted">Greeks</p>
+        <p className="text-[10px] text-brand-muted/60 font-mono">spot ${spot.toFixed(2)} · strike ${strike.toFixed(2)}</p>
       </div>
 
       {/* Two radial gauges side by side */}
@@ -122,12 +122,12 @@ export default function GreeksDashboard({
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="relative bg-white/[0.03] rounded-xl p-3 overflow-hidden"
+          className="relative bg-brand-surface rounded-xl p-3 overflow-hidden"
         >
           <div className="absolute inset-0 opacity-30" style={{
-            background: "radial-gradient(circle at 50% 60%, rgba(0,229,255,0.15) 0%, transparent 70%)"
+            background: "radial-gradient(circle at 50% 60%, rgba(42,171,99,0.15) 0%, transparent 70%)"
           }} />
-          <p className="text-[10px] text-brand-text/40 uppercase tracking-wider font-semibold relative">Delta</p>
+          <p className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold relative">Delta</p>
           <div className="relative h-[90px] -mt-1">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart
@@ -145,16 +145,16 @@ export default function GreeksDashboard({
                   background={{ fill: "rgba(255,255,255,0.05)" }}
                   dataKey="value"
                   cornerRadius={4}
-                  fill="#00e5ff"
+                  fill="#2aab63"
                 />
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-end justify-center pb-1 pointer-events-none">
               <div className="text-center">
-                <p className="text-xl font-bold text-brand-cyan font-mono leading-none" style={{ textShadow: "0 0 12px rgba(0,229,255,0.5)" }}>
+                <p className="text-xl font-bold text-brand-cyan font-mono leading-none" style={{ textShadow: "0 0 12px rgba(42,171,99,0.5)" }}>
                   {delta.toFixed(2)}
                 </p>
-                <p className="text-[9px] text-brand-text/40 mt-0.5">price sensitivity</p>
+                <p className="text-[9px] text-brand-muted mt-0.5">price sensitivity</p>
               </div>
             </div>
           </div>
@@ -165,12 +165,12 @@ export default function GreeksDashboard({
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="relative bg-white/[0.03] rounded-xl p-3 overflow-hidden"
+          className="relative bg-brand-surface rounded-xl p-3 overflow-hidden"
         >
           <div className="absolute inset-0 opacity-30" style={{
-            background: "radial-gradient(circle at 50% 60%, rgba(155,107,255,0.15) 0%, transparent 70%)"
+            background: "radial-gradient(circle at 50% 60%, rgba(255,73,74,0.15) 0%, transparent 70%)"
           }} />
-          <p className="text-[10px] text-brand-text/40 uppercase tracking-wider font-semibold relative">Vega</p>
+          <p className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold relative">Vega</p>
           <div className="relative h-[90px] -mt-1">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart
@@ -188,16 +188,16 @@ export default function GreeksDashboard({
                   background={{ fill: "rgba(255,255,255,0.05)" }}
                   dataKey="value"
                   cornerRadius={4}
-                  fill="#9b6bff"
+                  fill="#FF494A"
                 />
               </RadialBarChart>
             </ResponsiveContainer>
             <div className="absolute inset-0 flex items-end justify-center pb-1 pointer-events-none">
               <div className="text-center">
-                <p className="text-xl font-bold text-brand-purple font-mono leading-none" style={{ textShadow: "0 0 12px rgba(155,107,255,0.5)" }}>
+                <p className="text-xl font-bold text-brand-purple font-mono leading-none" style={{ textShadow: "0 0 12px rgba(255,73,74,0.5)" }}>
                   {vega.toFixed(3)}
                 </p>
-                <p className="text-[9px] text-brand-text/40 mt-0.5">vol sensitivity</p>
+                <p className="text-[9px] text-brand-muted mt-0.5">vol sensitivity</p>
               </div>
             </div>
           </div>
@@ -209,13 +209,13 @@ export default function GreeksDashboard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="bg-white/[0.03] rounded-xl p-3"
+        className="bg-brand-surface rounded-xl p-3"
       >
         <div className="flex items-center justify-between mb-1">
-          <p className="text-[10px] text-brand-text/40 uppercase tracking-wider font-semibold">Delta vs Spot</p>
+          <p className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold">Delta vs Spot</p>
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-cyan" />
-            <span className="text-[9px] text-brand-text/30 font-mono">current</span>
+            <span className="text-[9px] text-brand-muted/60 font-mono">current</span>
           </div>
         </div>
         <div className="h-[110px]">
@@ -223,8 +223,8 @@ export default function GreeksDashboard({
             <AreaChart data={deltaCurve} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="deltaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#00e5ff" stopOpacity={0.6} />
-                  <stop offset="100%" stopColor="#00e5ff" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#2aab63" stopOpacity={0.6} />
+                  <stop offset="100%" stopColor="#2aab63" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -235,11 +235,11 @@ export default function GreeksDashboard({
                 tickFormatter={(v) => `$${v}`}
               />
               <YAxis hide domain={[isPut ? -1 : 0, isPut ? 0 : 1]} />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#00e5ff40", strokeWidth: 1 }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#2aab6340", strokeWidth: 1 }} />
               <Area
                 type="monotone"
                 dataKey="delta"
-                stroke="#00e5ff"
+                stroke="#2aab63"
                 strokeWidth={2}
                 fill="url(#deltaGrad)"
                 isAnimationActive
@@ -255,13 +255,13 @@ export default function GreeksDashboard({
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.4 }}
-        className="bg-white/[0.03] rounded-xl p-3"
+        className="bg-brand-surface rounded-xl p-3"
       >
         <div className="flex items-center justify-between mb-1">
-          <p className="text-[10px] text-brand-text/40 uppercase tracking-wider font-semibold">Vega vs Spot</p>
+          <p className="text-[10px] text-brand-muted uppercase tracking-wider font-semibold">Vega vs Spot</p>
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-brand-purple" />
-            <span className="text-[9px] text-brand-text/30 font-mono">peak at strike</span>
+            <span className="text-[9px] text-brand-muted/60 font-mono">peak at strike</span>
           </div>
         </div>
         <div className="h-[110px]">
@@ -269,8 +269,8 @@ export default function GreeksDashboard({
             <AreaChart data={vegaCurve} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
               <defs>
                 <linearGradient id="vegaGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#9b6bff" stopOpacity={0.6} />
-                  <stop offset="100%" stopColor="#9b6bff" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#FF494A" stopOpacity={0.6} />
+                  <stop offset="100%" stopColor="#FF494A" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <XAxis
@@ -281,11 +281,11 @@ export default function GreeksDashboard({
                 tickFormatter={(v) => `$${v}`}
               />
               <YAxis hide />
-              <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#9b6bff40", strokeWidth: 1 }} />
+              <Tooltip content={<CustomTooltip />} cursor={{ stroke: "#FF494A40", strokeWidth: 1 }} />
               <Area
                 type="monotone"
                 dataKey="vega"
-                stroke="#9b6bff"
+                stroke="#FF494A"
                 strokeWidth={2}
                 fill="url(#vegaGrad)"
                 isAnimationActive

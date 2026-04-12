@@ -10,6 +10,7 @@ import HeroSection from "@/components/HeroSection";
 import { HowItWorks, CTABanner, FeaturesHeader, ProblemSolution } from "@/components/LandingSections";
 import GenerativeShowcase from "@/components/GenerativeShowcase";
 import CodeSnippetCard from "@/components/CodeSnippetCard";
+import FullpageScroll from "@/components/FullpageScroll";
 
 function ShieldIcon() {
   return (
@@ -36,72 +37,65 @@ function WalletIcon() {
 }
 
 function FeaturesSection() {
-  const ref = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "center center"],
-  });
-  const y = useTransform(scrollYProgress, [0, 1], [80, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.4], [0, 1]);
-
   return (
-    <div id="features" style={{ scrollMarginTop: "80px" }}>
-      <motion.section
-        ref={ref}
-        style={{ y, opacity }}
-        className="px-6 pb-28 max-w-6xl mx-auto"
-      >
-        <FeaturesHeader />
-        <div className="grid md:grid-cols-3 gap-5">
-          <FeatureCard icon={<ShieldIcon />} glowColor="blue" delay={0}
-            title="ZK-Verified Pricing"
-            description="Every option price is computed via Black-Scholes inside a RISC Zero zkVM. A Groth16 proof guarantees the math is correct — verifiable by anyone, unfakeable."
-          />
-          <FeatureCard icon={<ChainIcon />} glowColor="cyan" delay={120}
-            title="Trustless Settlement"
-            description="ZK proofs are verified on-chain by the XRPL Smart Escrow. If the option is in the money, the escrow releases funds directly to the buyer. No intermediary."
-          />
-          <FeatureCard icon={<WalletIcon />} glowColor="purple" delay={240}
-            title="XRPL Native"
-            description="Connect via Otsu, Crossmark, or Xaman. No bridge, no EVM wallet, no wrapped assets — options trading where XRP already lives. 4 transactions, full lifecycle."
-          />
+    <div id="features" className="px-6 py-20 max-w-6xl mx-auto w-full">
+      <FeaturesHeader />
+      <div className="grid md:grid-cols-3 gap-5">
+        <FeatureCard icon={<ShieldIcon />} glowColor="blue" delay={0}
+          title="ZK Pricing"
+          description="Black-Scholes inside a RISC Zero zkVM. Groth16 proof on every quote."
+        />
+        <FeatureCard icon={<ChainIcon />} glowColor="cyan" delay={120}
+          title="On-Chain Settlement"
+          description="Smart Escrow verifies the proof. Funds go directly to the buyer."
+        />
+        <FeatureCard icon={<WalletIcon />} glowColor="purple" delay={240}
+          title="XRPL Native"
+          description="No bridge, no EVM wallet. 4 transactions, full lifecycle."
+        />
+      </div>
+    </div>
+  );
+}
+
+function FooterSection() {
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <CTABanner />
+      <footer className="border-t-2 border-black px-6 py-8 w-full">
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-2.5">
+            <div className="relative w-6 h-6">
+              <Image src="/Verafi_Hero_Logo.png" alt="VeraFi" fill className="object-contain" />
+            </div>
+            <span className="font-mono font-medium text-brand-text">
+              vera<span className="text-brand-green font-bold">fi</span>
+            </span>
+          </div>
+          <p className="text-sm font-mono text-brand-muted">
+            Hack the Block 2026 · Paris Blockchain Week
+          </p>
         </div>
-      </motion.section>
+      </footer>
     </div>
   );
 }
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-brand-bg overflow-x-hidden">
+    <>
       <Navbar />
-      <HeroSection />
-
-      {/* ── Features ── */}
-      <FeaturesSection />
-
-      <HowItWorks />
-      <CodeSnippetCard />
-      <GenerativeShowcase />
-      <ProblemSolution />
-      <CTABanner />
-
-      {/* ── Footer ── */}
-      <footer className="border-t border-white/[0.06] px-6 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2.5">
-            <div className="relative w-6 h-6">
-              <Image src="/Verafi_Hero_Logo.png" alt="VeraFi" fill className="object-contain rounded" />
-            </div>
-            <span className="text-sm font-medium text-brand-text/60">
-              Vera<span className="text-brand-blue">Fi</span>
-            </span>
-          </div>
-          <p className="text-xs text-brand-text/30">
-            Built for Hack the Block 2026 · Paris Blockchain Week · XRPL groth5 Devnet
-          </p>
-        </div>
-      </footer>
-    </div>
+      <FullpageScroll>
+        {[
+          <HeroSection key="hero" />,
+          <FeaturesSection key="features" />,
+          <HowItWorks key="how" />,
+          <CodeSnippetCard key="code" />,
+          <GenerativeShowcase key="gen" />,
+          <ProblemSolution key="problem" />,
+          <FooterSection key="footer" />,
+        ]}
+      </FullpageScroll>
+    </>
   );
 }

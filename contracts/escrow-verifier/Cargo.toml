@@ -1,0 +1,13 @@
+[package]
+name = "verafi-escrow-verifier"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+bytemuck = { workspace = true }
+risc0-verifier-xrpl-wasm = { workspace = true }
+xrpl-wasm-stdlib = { workspace = true }
+verafi-pricer-builder = { path = "../zkvm/verafi-pricer" }
