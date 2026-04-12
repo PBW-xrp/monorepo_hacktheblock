@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Loader2, Wallet, ExternalLink } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
@@ -32,10 +32,16 @@ export default function WritePage() {
   const [expirySeconds, setExpirySeconds] = useState(EXPIRIES[2].seconds);
   const [optionType, setOptionType] = useState<OptionType>(WRITER_DEFAULTS.optionType);
   const [createState, setCreateState] = useState<CreateState>({ status: "idle" });
+  const [clientNow, setClientNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setClientNow(Math.floor(Date.now() / 1000));
+  }, []);
 
   const derived = useMemo(() => {
+    if (clientNow === null) return null;
     try {
-      const nowUnix = Math.floor(Date.now() / 1000);
+      const nowUnix = clientNow;
       const cancelAfterUnix = nowUnix + expirySeconds;
       const data = encodeEscrowDataV1({ strikeUsd, expirySeconds, optionType });
       return {
@@ -49,7 +55,7 @@ export default function WritePage() {
     } catch {
       return null;
     }
-  }, [collateralXrp, expirySeconds, optionType, strikeUsd]);
+  }, [clientNow, collateralXrp, expirySeconds, optionType, strikeUsd]);
 
   const handlePrepare = () => {
     if (walletState.status !== "connected") {
@@ -94,59 +100,23 @@ export default function WritePage() {
     setCreateState({ status: "submitting" });
 
     try {
-      // Otsu's signAndSubmit sends to its internal network, NOT groth5.
-      // We must: signTransaction (Otsu) → submitAndWait (xrpl.js to groth5).
-      const { Client } = await import("xrpl");
-      const client = new Client(GROTH5_WSS);
-      await client.connect();
-
-      // Get account info for Sequence + build complete tx
-      const accountInfo = await client.request({
-        command: "account_info",
-        account: walletState.address,
-      });
-      const ledgerInfo = await client.request({ command: "ledger", ledger_index: "current" });
-      const currentLedger = (ledgerInfo.result as any).ledger_current_index || (ledgerInfo.result as any).ledger?.ledger_index;
-
-      const fullTx = {
-        ...tx,
-        Account: walletState.address,
-        Sequence: (accountInfo.result as any).account_data.Sequence,
-        Fee: "50000", // 0.05 XRP — higher fee for smart escrow (large tx)
-        LastLedgerSequence: currentLedger + 20,
-      };
-
-      console.log("[Write] full tx:", JSON.stringify(fullTx));
-
       if (walletState.wallet === "otsu") {
-        // Sign only (Otsu), then submit via xrpl.js to groth5
         const provider = (window as any).xrpl;
-        const signed = await provider.signTransaction(fullTx);
-        const txBlob = signed?.tx_blob;
-        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
-        console.log("[Write] submitting to groth5...");
-        const submitResult = await client.submitAndWait(txBlob);
-        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
-        if (txResult && txResult !== "tesSUCCESS") {
-          throw new Error(`Transaction failed: ${txResult}`);
-        }
-        const txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
-        await client.disconnect();
+        const result = await provider.signAndSubmit(tx);
+        const txHash = result?.hash || "confirmed";
         setCreateState({ status: "success", txHash });
         return;
       }
 
       if (walletState.wallet === "crossmark") {
         const { default: sdk } = await import("@crossmarkio/sdk");
-        const result = await sdk.methods.signAndSubmitAndWait(fullTx as any);
+        const result = await sdk.methods.signAndSubmitAndWait({ ...tx, Account: walletState.address } as any);
         const data = result?.response?.data as any;
         const txHash = data?.resp?.result?.hash || data?.resp?.hash || data?.hash || "confirmed";
-        await client.disconnect();
         setCreateState({ status: "success", txHash });
         return;
       }
 
-      await client.disconnect();
       throw new Error("Wallet not supported for EscrowCreate.");
     } catch (err: any) {
       const message = err?.message || err?.data?.message || err?.response?.data?.message || (typeof err === "string" ? err : null) || JSON.stringify(err, Object.getOwnPropertyNames(err || {})) || "EscrowCreate failed.";
@@ -265,7 +235,7 @@ export default function WritePage() {
               <div className="font-mono text-sm text-brand-text/80">{derived.cancelAfterRipple}</div>
 
               <div className="text-xs text-brand-text/40">FinishFunction</div>
-              <div className="text-xs text-brand-text/50 break-all">{FINISH_FUNCTION_PLACEHOLDER}</div>
+              <div className="text-xs text-brand-text/50 break-all font-mono">{FINISH_FUNCTION_PLACEHOLDER.length > 20 ? `${FINISH_FUNCTION_PLACEHOLDER.slice(0, 10)}…${FINISH_FUNCTION_PLACEHOLDER.slice(-10)}` : FINISH_FUNCTION_PLACEHOLDER}</div>
 
               <pre className="mt-2 bg-white/[0.03] rounded-xl p-4 text-xs text-brand-text/70 overflow-x-auto">{JSON.stringify({
                 TransactionType: "EscrowCreate",
