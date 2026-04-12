@@ -213,8 +213,14 @@ export default function BoardPage() {
               <Layers className="w-6 h-6 text-brand-text/20" />
             </div>
             <div className="text-center">
-              <p className="font-semibold text-brand-text/40">No options match this filter</p>
-              <p className="text-sm text-brand-text/20 mt-1">Try a different type or refresh.</p>
+              <p className="font-semibold text-brand-text/40">
+                {data?.isMock ? "No options match this filter" : "No live escrows found yet"}
+              </p>
+              <p className="text-sm text-brand-text/20 mt-1">
+                {data?.isMock
+                  ? "Try a different type or refresh."
+                  : "Create one from /write or enable NEXT_PUBLIC_ENABLE_MOCK_OPTIONS=true for demo fallback."}
+              </p>
             </div>
           </div>
         ) : (

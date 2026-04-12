@@ -171,12 +171,12 @@ export async function GET() {
     // Network error — fall through to mock data
   }
 
-  // Fall back to mock data when no real escrows exist yet
-  const options = realOptions.length > 0 ? realOptions : generateMockOptions();
+  const enableMockFallback = process.env.NEXT_PUBLIC_ENABLE_MOCK_OPTIONS === "true";
+  const options = realOptions.length > 0 ? realOptions : enableMockFallback ? generateMockOptions() : [];
 
   return NextResponse.json({
     options,
     count: options.length,
-    isMock: realOptions.length === 0,
+    isMock: realOptions.length === 0 && enableMockFallback,
   });
 }

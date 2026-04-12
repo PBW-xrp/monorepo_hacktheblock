@@ -3,6 +3,7 @@ import "./globals.css";
 import { WalletProvider } from "@/contexts/WalletContext";
 import SmoothScrollProvider from "@/components/SmoothScrollProvider";
 import ScrollProgress from "@/components/ScrollProgress";
+import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "VeraFi — ZK Options on XRPL",
@@ -26,8 +27,11 @@ export default function RootLayout({
     <html lang="en">
       <body className="bg-brand-bg text-brand-text antialiased">
         <WalletProvider>
+          <Navbar />
           <ScrollProgress />
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          <SmoothScrollProvider>
+            <div className="pt-16">{children}</div>
+          </SmoothScrollProvider>
         </WalletProvider>
       </body>
     </html>
