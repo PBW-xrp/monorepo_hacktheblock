@@ -18,6 +18,7 @@ out/
 *.key
 *.pem
 *.json
+!contracts/tests/fixtures/*.json
 !.vscode/*.json
 
 # local tooling

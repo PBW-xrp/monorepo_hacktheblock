@@ -1,0 +1,10 @@
+{
+  "spot": 1400000,
+  "strike": 1150000,
+  "vol": 4300,
+  "expiry": 2592000,
+  "is_call": 1,
+  "price": 250000,
+  "is_itm": 1,
+  "endianness": "little"
+}
