@@ -36,6 +36,18 @@ export default function Navbar() {
           >
             How It Works
           </a>
+          <Link
+            href="/write"
+            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
+          >
+            Write
+          </Link>
+          <Link
+            href="/board"
+            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
+          >
+            Board
+          </Link>
         </div>
 
         {/* CTA */}
