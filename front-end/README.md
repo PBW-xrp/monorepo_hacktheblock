@@ -144,6 +144,7 @@ Current `/exercise` supports:
 - entering escrow offer sequence
 - using journal hex
 - pasting seal hex
+- prefill from board handoff
 - wallet-backed `EscrowFinish` submission path
 
 ## Relationship with `contracts/`
@@ -159,7 +160,7 @@ The frontend must stay aligned with `../contracts/` for:
 ## Current gaps
 
 Still missing or incomplete:
-- better live option ingestion without relying on demo fallback
+- better live option ingestion across more than the latest ledger window
 - better proof artifact autofill from contract outputs
 - more shared helpers between contract docs and frontend transaction builders
 
