@@ -2,9 +2,13 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, Loader2, Wallet } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Loader2, Wallet, ExternalLink } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
 import { encodeEscrowDataV1, unixToRippleTime, WRITER_DEFAULTS, xrpToDrops, type OptionType } from "@/types/contracts";
+
+const GROTH5_WSS = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
+const XRPL_EXPLORER = process.env.NEXT_PUBLIC_XRPL_EXPLORER || "http://custom.xrpl.org/groth5.devnet.rippletest.net";
+const FINISH_FUNCTION_PLACEHOLDER = process.env.NEXT_PUBLIC_FINISH_FUNCTION_HEX || "<HEX_ENCODED_WASM>";
 
 const EXPIRIES = [
   { label: "1 Day", seconds: 86_400 },
@@ -13,11 +17,11 @@ const EXPIRIES = [
   { label: "90 Days", seconds: 7_776_000 },
 ];
 
-const FINISH_FUNCTION_PLACEHOLDER = "compiled from contracts/target/wasm32v1-none/release/verafi_escrow_verifier.wasm";
-
 type CreateState =
   | { status: "idle" }
   | { status: "ready" }
+  | { status: "submitting" }
+  | { status: "success"; txHash: string }
   | { status: "error"; message: string };
 
 export default function WritePage() {
@@ -61,6 +65,68 @@ export default function WritePage() {
       return;
     }
     setCreateState({ status: "ready" });
+  };
+
+  const handleSubmit = async () => {
+    if (walletState.status !== "connected") {
+      setCreateState({ status: "error", message: "Connect the writer wallet first." });
+      return;
+    }
+    if (!derived) {
+      setCreateState({ status: "error", message: "Payload is not ready." });
+      return;
+    }
+    if (FINISH_FUNCTION_PLACEHOLDER === "<HEX_ENCODED_WASM>") {
+      setCreateState({ status: "error", message: "Set NEXT_PUBLIC_FINISH_FUNCTION_HEX before submitting." });
+      return;
+    }
+
+    const tx = {
+      TransactionType: "EscrowCreate",
+      Amount: derived.amountDrops,
+      Destination: buyerAddress,
+      CancelAfter: derived.cancelAfterRipple,
+      FinishFunction: FINISH_FUNCTION_PLACEHOLDER,
+      Data: derived.dataHex,
+      NetworkID: 1256,
+    };
+
+    setCreateState({ status: "submitting" });
+
+    try {
+      if (walletState.wallet === "otsu") {
+        const provider = (window as any).xrpl;
+        const { Client } = await import("xrpl");
+        const client = new Client(GROTH5_WSS);
+        await client.connect();
+        const prepared = await client.autofill({ ...tx, Account: walletState.address } as any);
+        const signed = await provider.signTransaction(prepared);
+        const txBlob = signed?.tx_blob;
+        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
+        const submitResult = await client.submitAndWait(txBlob);
+        await client.disconnect();
+        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
+        if (txResult && txResult !== "tesSUCCESS") {
+          throw new Error(`Transaction failed: ${txResult}`);
+        }
+        const txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
+        setCreateState({ status: "success", txHash });
+        return;
+      }
+
+      if (walletState.wallet === "crossmark") {
+        const { default: sdk } = await import("@crossmarkio/sdk");
+        const result = await sdk.methods.signAndSubmitAndWait({ ...tx, Account: walletState.address } as any);
+        const data = result?.response?.data as any;
+        const txHash = data?.resp?.result?.hash || data?.resp?.hash || data?.hash || "confirmed";
+        setCreateState({ status: "success", txHash });
+        return;
+      }
+
+      throw new Error("Wallet not supported for EscrowCreate.");
+    } catch (err) {
+      setCreateState({ status: "error", message: err instanceof Error ? err.message : "EscrowCreate failed." });
+    }
   };
 
   return (
@@ -112,10 +178,16 @@ export default function WritePage() {
             </div>
           </div>
 
-          <button onClick={handlePrepare} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-blue to-brand-cyan text-[#0a0d14] flex items-center justify-center gap-2">
-            <Wallet className="w-4 h-4" />
-            Prepare EscrowCreate
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <button onClick={handlePrepare} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-blue to-brand-cyan text-[#0a0d14] flex items-center justify-center gap-2">
+              <Wallet className="w-4 h-4" />
+              Prepare EscrowCreate
+            </button>
+            <button onClick={handleSubmit} disabled={createState.status === "submitting"} className="w-full py-4 rounded-2xl font-bold text-sm bg-gradient-to-r from-brand-purple to-brand-blue text-white flex items-center justify-center gap-2 disabled:opacity-60">
+              {createState.status === "submitting" ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+              Submit EscrowCreate
+            </button>
+          </div>
 
           {createState.status === "error" && (
             <div className="glass-card p-4 border border-red-400/20 text-sm text-red-400">{createState.message}</div>
@@ -124,7 +196,20 @@ export default function WritePage() {
           {createState.status === "ready" && (
             <div className="glass-card p-4 border border-brand-cyan/20 text-sm text-brand-cyan flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4" />
-              Payload prepared. Next step is wallet-backed signing on groth5.
+              Payload prepared. Ready for wallet-backed signing on groth5.
+            </div>
+          )}
+
+          {createState.status === "success" && (
+            <div className="glass-card p-4 border border-brand-cyan/20 text-sm text-brand-cyan flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4" />
+                EscrowCreate submitted successfully.
+              </div>
+              <a href={`${XRPL_EXPLORER}/transactions/${createState.txHash}`} target="_blank" rel="noreferrer" className="text-xs text-brand-cyan/80 hover:text-brand-cyan flex items-center gap-1 font-mono break-all">
+                {createState.txHash}
+                <ExternalLink className="w-3 h-3 shrink-0" />
+              </a>
             </div>
           )}
         </div>
@@ -155,7 +240,7 @@ export default function WritePage() {
               <div className="font-mono text-sm text-brand-text/80">{derived.cancelAfterRipple}</div>
 
               <div className="text-xs text-brand-text/40">FinishFunction</div>
-              <div className="text-xs text-brand-text/50">{FINISH_FUNCTION_PLACEHOLDER}</div>
+              <div className="text-xs text-brand-text/50 break-all">{FINISH_FUNCTION_PLACEHOLDER}</div>
 
               <pre className="mt-2 bg-white/[0.03] rounded-xl p-4 text-xs text-brand-text/70 overflow-x-auto">{JSON.stringify({
                 TransactionType: "EscrowCreate",
