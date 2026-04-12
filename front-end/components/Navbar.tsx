@@ -48,6 +48,12 @@ export default function Navbar() {
           >
             Board
           </Link>
+          <Link
+            href="/exercise"
+            className="text-sm text-brand-text/60 hover:text-brand-text transition-colors duration-150"
+          >
+            Exercise
+          </Link>
         </div>
 
         {/* CTA */}

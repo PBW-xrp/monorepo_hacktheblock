@@ -7,7 +7,7 @@ It is responsible for:
 - option board display
 - premium payment flow
 - writer-side escrow creation flow
-- future buyer-side exercise flow
+- buyer-side escrow finish flow
 - connecting the web app to the contract workflow defined in `../contracts/`
 
 ## Architecture overview
@@ -21,9 +21,10 @@ flowchart TD
     B --> D[Option Board API]
     B --> E[Write Flow]
     B --> F[Trade Flow]
+    B --> I[Exercise Flow]
     E --> G[EscrowCreate]
     F --> H[Payment]
-    I[Future Exercise Flow] --> J[EscrowFinish]
+    I --> J[EscrowFinish]
     G --> K[XRPL groth5]
     H --> K
     J --> K
@@ -57,6 +58,7 @@ Current important pages:
 - `/board` option listings
 - `/trade` premium payment flow
 - `/write` writer-side escrow creation flow
+- `/exercise` buyer-side escrow finish flow
 
 ### `components/`
 UI and interaction components.
@@ -135,6 +137,14 @@ Current `/board` supports:
 - fetch real escrows from groth5 when present
 - fallback to demo data when no real escrows are found
 
+### `/exercise`
+Current `/exercise` supports:
+- entering writer owner address
+- entering escrow offer sequence
+- using journal hex
+- pasting seal hex
+- wallet-backed `EscrowFinish` submission path
+
 ## Relationship with `contracts/`
 
 The frontend must stay aligned with `../contracts/` for:
@@ -146,9 +156,8 @@ The frontend must stay aligned with `../contracts/` for:
 ## Current gaps
 
 Still missing or incomplete:
-- dedicated `/exercise` page
-- full buyer-side `EscrowFinish` submission path
 - better live option ingestion without relying on demo fallback
+- better proof artifact autofill from contract outputs
 - more shared helpers between contract docs and frontend transaction builders
 
 ## Validation checklist
@@ -158,5 +167,6 @@ Before considering frontend changes correct, verify:
 2. `npm run build` succeeds
 3. wallet connection still works
 4. `/write` renders and prepares the right payload
-5. `/trade` still builds and works
-6. environment placeholders remain safe and non-secret
+5. `/exercise` renders and prepares the right payload
+6. `/trade` still builds and works
+7. environment placeholders remain safe and non-secret
