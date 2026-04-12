@@ -1,10 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Navbar() {
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 border-b-2 border-black bg-[#eee9dd]"
+      className="fixed top-0 left-0 right-0 z-50 border-b-2"
+      style={{ borderColor: "var(--brand-border)", background: "var(--nav-bg)" }}
     >
       <div className="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between">
         {/* Logo */}
@@ -41,10 +43,13 @@ export default function Navbar() {
           ))}
         </div>
 
-        {/* CTA */}
-        <Link href="/login" className="btn-primary text-sm py-2 px-5">
-          Connect
-        </Link>
+        {/* Theme + CTA */}
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link href="/login" className="btn-primary text-sm py-2 px-5">
+            Connect
+          </Link>
+        </div>
       </div>
     </nav>
   );

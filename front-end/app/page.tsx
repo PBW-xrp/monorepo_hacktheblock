@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Navbar from "@/components/Navbar";
+// Navbar is now in layout.tsx — global across all pages
 import FeatureCard from "@/components/FeatureCard";
 import HeroSection from "@/components/HeroSection";
 import { HowItWorks, CTABanner, FeaturesHeader, ProblemSolution } from "@/components/LandingSections";
@@ -84,7 +84,7 @@ function FooterSection() {
 export default function LandingPage() {
   return (
     <>
-      <Navbar />
+      {/* Navbar is in layout.tsx */}
       <FullpageScroll>
         {[
           <HeroSection key="hero" />,

@@ -94,23 +94,59 @@ export default function WritePage() {
     setCreateState({ status: "submitting" });
 
     try {
+      // Otsu's signAndSubmit sends to its internal network, NOT groth5.
+      // We must: signTransaction (Otsu) → submitAndWait (xrpl.js to groth5).
+      const { Client } = await import("xrpl");
+      const client = new Client(GROTH5_WSS);
+      await client.connect();
+
+      // Get account info for Sequence + build complete tx
+      const accountInfo = await client.request({
+        command: "account_info",
+        account: walletState.address,
+      });
+      const ledgerInfo = await client.request({ command: "ledger", ledger_index: "current" });
+      const currentLedger = (ledgerInfo.result as any).ledger_current_index || (ledgerInfo.result as any).ledger?.ledger_index;
+
+      const fullTx = {
+        ...tx,
+        Account: walletState.address,
+        Sequence: (accountInfo.result as any).account_data.Sequence,
+        Fee: "50000", // 0.05 XRP — higher fee for smart escrow (large tx)
+        LastLedgerSequence: currentLedger + 20,
+      };
+
+      console.log("[Write] full tx:", JSON.stringify(fullTx));
+
       if (walletState.wallet === "otsu") {
+        // Sign only (Otsu), then submit via xrpl.js to groth5
         const provider = (window as any).xrpl;
-        const result = await provider.signAndSubmit(tx);
-        const txHash = result?.hash || "confirmed";
+        const signed = await provider.signTransaction(fullTx);
+        const txBlob = signed?.tx_blob;
+        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
+        console.log("[Write] submitting to groth5...");
+        const submitResult = await client.submitAndWait(txBlob);
+        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
+        if (txResult && txResult !== "tesSUCCESS") {
+          throw new Error(`Transaction failed: ${txResult}`);
+        }
+        const txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
+        await client.disconnect();
         setCreateState({ status: "success", txHash });
         return;
       }
 
       if (walletState.wallet === "crossmark") {
         const { default: sdk } = await import("@crossmarkio/sdk");
-        const result = await sdk.methods.signAndSubmitAndWait({ ...tx, Account: walletState.address } as any);
+        const result = await sdk.methods.signAndSubmitAndWait(fullTx as any);
         const data = result?.response?.data as any;
         const txHash = data?.resp?.result?.hash || data?.resp?.hash || data?.hash || "confirmed";
+        await client.disconnect();
         setCreateState({ status: "success", txHash });
         return;
       }
 
+      await client.disconnect();
       throw new Error("Wallet not supported for EscrowCreate.");
     } catch (err: any) {
       const message = err?.message || err?.data?.message || err?.response?.data?.message || (typeof err === "string" ? err : null) || JSON.stringify(err, Object.getOwnPropertyNames(err || {})) || "EscrowCreate failed.";

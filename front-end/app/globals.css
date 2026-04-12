@@ -4,6 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Light mode (default) — Rysk beige ─── */
 :root {
   --brand-bg: #eee9dd;
   --brand-surface: #e8e3d6;
@@ -12,6 +13,33 @@
   --brand-muted: #3c4242;
   --brand-green: #2aab63;
   --brand-red: #FF494A;
+  --shadow-color: rgba(0,0,0,0.25);
+  --sunken-light: #fff;
+  --sunken-dark: #808080;
+  --sunken-mid: #dfdfdf;
+  --sunken-deep: #0a0a0a;
+  --grid-color: rgba(0,0,0,0.03);
+  --nav-bg: #eee9dd;
+  --input-bg: #ffffff;
+}
+
+/* ─── Dark mode — warm charcoal Rysk ─── */
+.dark {
+  --brand-bg: #1a1a1f;
+  --brand-surface: #222228;
+  --brand-border: #555555;
+  --brand-text: #e0ddd5;
+  --brand-muted: #8a8a95;
+  --brand-green: #3cc974;
+  --brand-red: #ff6b6b;
+  --shadow-color: rgba(0,0,0,0.5);
+  --sunken-light: #2a2a30;
+  --sunken-dark: #0a0a0e;
+  --sunken-mid: #1a1a1f;
+  --sunken-deep: #000000;
+  --grid-color: rgba(255,255,255,0.03);
+  --nav-bg: #1a1a1f;
+  --input-bg: #2a2a30;
 }
 
 * {
@@ -35,67 +63,54 @@ body {
   line-height: 1.7;
 }
 
-/* Background grid pattern — on body directly (no pseudo = no repaint) */
+/* Background grid pattern */
 body {
   background-image:
-    linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
   background-size: 24px 24px;
   background-attachment: fixed;
 }
 
-/* Scrollbar — chunky, bordered */
+/* Scrollbar */
 ::-webkit-scrollbar {
   width: 12px;
 }
 ::-webkit-scrollbar-track {
   background: var(--brand-bg);
-  border-left: 2px solid #000;
+  border-left: 2px solid var(--brand-border);
 }
 ::-webkit-scrollbar-thumb {
-  background: #c0b8a8;
-  border: 2px solid #000;
+  background: var(--brand-surface);
+  border: 2px solid var(--brand-border);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #a8a090;
+  background: var(--brand-muted);
 }
 
-/* No custom scroll snap — let the page scroll naturally */
-
-/* Selection */
 ::selection {
   background: rgba(42, 171, 99, 0.3);
-  color: #25292E;
+  color: var(--brand-text);
 }
 
 @layer components {
-  /*
-   * Panel — solid surface, THICK black border, hard offset shadow.
-   * This is the Rysk "window" feel.
-   */
   .glass-card {
     background: var(--brand-bg);
     border: 2px solid var(--brand-border);
     border-radius: 0;
-    box-shadow: 4px 4px 0 0 rgba(0,0,0,0.3);
+    box-shadow: 4px 4px 0 0 var(--shadow-color);
   }
 
   .glass-card:hover {
-    box-shadow: 6px 6px 0 0 rgba(0,0,0,0.35);
+    box-shadow: 6px 6px 0 0 var(--shadow-color);
   }
 
-  /* Win98-style sunken input field */
   .field-sunken {
-    background: #ffffff;
-    border: 2px solid #000;
-    box-shadow:
-      inset -1px -1px #fff,
-      inset 1px 1px #808080,
-      inset -2px -2px #dfdfdf,
-      inset 2px 2px #0a0a0a;
+    background: var(--input-bg);
+    border: 2px solid var(--brand-border);
+    box-shadow: var(--win98-sunken, none);
   }
 
-  /* Panel header bar — like a terminal header */
   .panel-header {
     border-bottom: 2px solid var(--brand-border);
     padding: 8px 12px;
@@ -117,17 +132,13 @@ body {
     font-weight: 500;
   }
 
-  /*
-   * Primary button — solid green, THICK black border, brutal offset shadow.
-   * Rysk-style: bold, unmistakable, physical.
-   */
   .btn-primary {
     @apply relative inline-flex items-center justify-center gap-2 px-8 py-3 font-medium text-sm transition-all duration-100;
     background: var(--brand-green);
     color: #ffffff;
     border: 2px solid var(--brand-border);
     border-radius: 0;
-    box-shadow: 4px 4px 0 0 #000;
+    box-shadow: 4px 4px 0 0 var(--brand-border);
     font-family: 'DM Mono', monospace;
     font-weight: 500;
     letter-spacing: 0.03em;
@@ -136,17 +147,16 @@ body {
 
   .btn-primary:hover {
     transform: translate(-2px, -2px);
-    box-shadow: 6px 6px 0 0 #000;
+    box-shadow: 6px 6px 0 0 var(--brand-border);
   }
 
   .btn-primary:active {
     transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 0 #000;
+    box-shadow: 1px 1px 0 0 var(--brand-border);
   }
 
-  /* Focus state — Rysk/Win98 dotted outline */
   .btn-primary:focus-visible {
-    outline: 2px dotted #000;
+    outline: 2px dotted var(--brand-border);
     outline-offset: 3px;
   }
 }

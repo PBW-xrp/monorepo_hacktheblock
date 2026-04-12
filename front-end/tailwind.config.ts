@@ -6,50 +6,39 @@ const config: Config = {
     "./components/**/*.{js,ts,jsx,tsx,mdx}",
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       colors: {
-        // Rysk-inspired warm beige + single accent
-        "brand-bg": "#eee9dd",
-        "brand-surface": "#e8e3d6",
-        "brand-border": "#000000",
-        "brand-text": "#25292E",
-        "brand-muted": "#3c4242",
-        // Functional — single green accent for actions/CALL
-        "brand-blue": "#2aab63",
-        "brand-cyan": "#2aab63",
-        "brand-purple": "#FF494A",
-        "brand-green": "#2aab63",
-        "brand-red": "#FF494A",
+        // Light mode (Rysk beige)
+        "brand-bg": "var(--brand-bg)",
+        "brand-surface": "var(--brand-surface)",
+        "brand-border": "var(--brand-border)",
+        "brand-text": "var(--brand-text)",
+        "brand-muted": "var(--brand-muted)",
+        // Functional
+        "brand-blue": "var(--brand-green)",
+        "brand-cyan": "var(--brand-green)",
+        "brand-purple": "var(--brand-red)",
+        "brand-green": "var(--brand-green)",
+        "brand-red": "var(--brand-red)",
         // Status
         "brand-success": "#30E000",
         "brand-warning": "#FFD641",
         "brand-error": "#FF494A",
-        // Win98 surface tones
-        "win98-silver": "#c0c0c0",
-        "win98-highlight": "#dfdfdf",
-        "win98-shadow": "#808080",
-        "win98-titlebar": "#000080",
       },
       fontFamily: {
         sans: ['"DM Sans"', "Inter", "system-ui", "sans-serif"],
         mono: ['"DM Mono"', '"Source Code Pro"', '"Space Mono"', "monospace"],
       },
       boxShadow: {
-        // Rysk production — offset with mild blur
-        "panel": "6px 6px 0 0 rgba(0,0,0,0.25)",
-        "panel-hover": "8px 8px 0 0 rgba(0,0,0,0.3)",
-        "panel-press": "2px 2px 0 0 rgba(0,0,0,0.2)",
-        // Neobrutalism scale
-        "brutal-sm": "3px 3px 0 0 #000",
-        "brutal-md": "5px 5px 0 0 #000",
-        "brutal-lg": "8px 8px 0 0 #000",
-        // Button
-        "btn": "0px 4px 12px rgba(0,0,0,0.1)",
-        "btn-hover": "3px 3px 0 0 rgba(0,0,0,0.5)",
-        // Win98 bevel
-        "win98-raised": "inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf",
-        "win98-sunken": "inset -1px -1px #fff, inset 1px 1px #808080, inset -2px -2px #dfdfdf, inset 2px 2px #0a0a0a",
+        "panel": "4px 4px 0 0 var(--shadow-color)",
+        "panel-hover": "6px 6px 0 0 var(--shadow-color)",
+        "brutal-sm": "3px 3px 0 0 var(--brand-border)",
+        "brutal-md": "5px 5px 0 0 var(--brand-border)",
+        "brutal-lg": "8px 8px 0 0 var(--brand-border)",
+        "btn": "4px 4px 0 0 var(--brand-border)",
+        "win98-sunken": "inset -1px -1px var(--sunken-light), inset 1px 1px var(--sunken-dark), inset -2px -2px var(--sunken-mid), inset 2px 2px var(--sunken-deep)",
       },
       borderRadius: {
         "rysk": "0.5rem",

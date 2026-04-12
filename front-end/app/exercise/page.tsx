@@ -63,7 +63,7 @@ function ExercisePageContent() {
         { Memo: { MemoData: journalHex } },
         { Memo: { MemoData: sealHex } },
       ],
-      NetworkID: XRPL_DEFAULTS.networkId,
+      networkID: XRPL_DEFAULTS.networkId,
     };
 
     setExerciseState({ status: "submitting" });
@@ -71,20 +71,8 @@ function ExercisePageContent() {
     try {
       if (walletState.wallet === "otsu") {
         const provider = (window as any).xrpl;
-        const { Client } = await import("xrpl");
-        const client = new Client(GROTH5_WSS);
-        await client.connect();
-        const prepared = await client.autofill({ ...tx, Account: walletState.address } as any);
-        const signed = await provider.signTransaction(prepared);
-        const txBlob = signed?.tx_blob;
-        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
-        const submitResult = await client.submitAndWait(txBlob);
-        await client.disconnect();
-        const txResult = (submitResult.result as any)?.meta?.TransactionResult;
-        if (txResult && txResult !== "tesSUCCESS") {
-          throw new Error(`Transaction failed: ${txResult}`);
-        }
-        const txHash = (submitResult.result as any)?.hash || signed?.hash || "confirmed";
+        const result = await provider.signAndSubmit(tx);
+        const txHash = result?.hash || "confirmed";
         setExerciseState({ status: "success", txHash });
         return;
       }
@@ -99,8 +87,9 @@ function ExercisePageContent() {
       }
 
       throw new Error("Wallet not supported for EscrowFinish.");
-    } catch (err) {
-      setExerciseState({ status: "error", message: err instanceof Error ? err.message : "EscrowFinish failed." });
+    } catch (err: any) {
+      const message = err?.message || err?.data?.message || err?.response?.data?.message || (typeof err === "string" ? err : null) || JSON.stringify(err, Object.getOwnPropertyNames(err || {})) || "EscrowFinish failed.";
+      setExerciseState({ status: "error", message });
     }
   };
 
