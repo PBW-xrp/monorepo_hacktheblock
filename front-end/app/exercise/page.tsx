@@ -5,10 +5,11 @@ import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, ExternalLink, Loader2, Shield } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
+import { XRPL_DEFAULTS } from "@/types/contracts";
 
 const XRPL_EXPLORER = process.env.NEXT_PUBLIC_XRPL_EXPLORER || "http://custom.xrpl.org/groth5.devnet.rippletest.net";
 const GROTH5_WSS = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
-const DEFAULT_OWNER = process.env.NEXT_PUBLIC_DEFAULT_WRITER_ADDRESS || "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe";
+const DEFAULT_OWNER = XRPL_DEFAULTS.writerAddress;
 const DEFAULT_JOURNAL = "c05c150000000000308c110000000000cc100000008d2700000000000100000090d003000000000001000000";
 
 type ExerciseState =
@@ -62,7 +63,7 @@ function ExercisePageContent() {
         { Memo: { MemoData: journalHex } },
         { Memo: { MemoData: sealHex } },
       ],
-      NetworkID: 1256,
+      NetworkID: XRPL_DEFAULTS.networkId,
     };
 
     setExerciseState({ status: "submitting" });

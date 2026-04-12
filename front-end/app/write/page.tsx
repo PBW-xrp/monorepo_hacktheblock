@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Loader2, Wallet, ExternalLink } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
-import { encodeEscrowDataV1, unixToRippleTime, WRITER_DEFAULTS, xrpToDrops, type OptionType } from "@/types/contracts";
+import { encodeEscrowDataV1, unixToRippleTime, WRITER_DEFAULTS, XRPL_DEFAULTS, xrpToDrops, type OptionType } from "@/types/contracts";
 
 const GROTH5_WSS = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
 const XRPL_EXPLORER = process.env.NEXT_PUBLIC_XRPL_EXPLORER || "http://custom.xrpl.org/groth5.devnet.rippletest.net";
@@ -26,7 +26,7 @@ type CreateState =
 
 export default function WritePage() {
   const { state: walletState } = useWallet();
-  const [buyerAddress, setBuyerAddress] = useState("r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr");
+  const [buyerAddress, setBuyerAddress] = useState(XRPL_DEFAULTS.buyerAddress);
   const [collateralXrp, setCollateralXrp] = useState(WRITER_DEFAULTS.collateralXrp);
   const [strikeUsd, setStrikeUsd] = useState(WRITER_DEFAULTS.strikeUsd);
   const [expirySeconds, setExpirySeconds] = useState(EXPIRIES[2].seconds);
@@ -88,7 +88,7 @@ export default function WritePage() {
       CancelAfter: derived.cancelAfterRipple,
       FinishFunction: FINISH_FUNCTION_PLACEHOLDER,
       Data: derived.dataHex,
-      NetworkID: 1256,
+      NetworkID: XRPL_DEFAULTS.networkId,
     };
 
     setCreateState({ status: "submitting" });

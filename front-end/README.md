@@ -85,6 +85,7 @@ Important variables:
 - `NEXT_PUBLIC_FINISH_FUNCTION_HEX`
 - `NEXT_PUBLIC_DEFAULT_BUYER_ADDRESS`
 - `NEXT_PUBLIC_DEFAULT_WRITER_ADDRESS`
+- `NEXT_PUBLIC_ENABLE_MOCK_OPTIONS`
 
 ## Install
 
@@ -152,6 +153,8 @@ The frontend must stay aligned with `../contracts/` for:
 - proof payload expectations
 - writer and buyer lifecycle
 - `EscrowCreate` and `EscrowFinish` payload shape
+- default writer and buyer addresses used in groth5 demos
+- network id and mock-mode assumptions
 
 ## Current gaps
 

@@ -10,6 +10,13 @@ This file tracks the current contract-side deployment inputs and the result of r
 ### Buyer address
 - `r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr`
 
+### Frontend/network alignment values
+- network id: `1256`
+- premium constant: `5000000` drops
+- `NEXT_PUBLIC_DEFAULT_WRITER_ADDRESS=rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe`
+- `NEXT_PUBLIC_DEFAULT_BUYER_ADDRESS=r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr`
+- `NEXT_PUBLIC_ENABLE_MOCK_OPTIONS=false`
+
 ### Collateral
 - `100 XRP`
 - `100000000` drops

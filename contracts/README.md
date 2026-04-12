@@ -9,8 +9,13 @@ It contains the code and runbook for:
 - preparing the `EscrowFinish` payload
 - running the full contract workflow from a laptop on groth5
 
-The intended audience for this README is the hackathon team during judging.
+The intended audience for this README is the hackathon team during review and judging.
 The goal is that a teammate can open this folder on their laptop, follow the steps, and understand exactly what each part does.
+
+Frontend alignment note:
+- `front-end/` should use the same writer and buyer addresses recorded in `DEPLOYMENT_STATUS.md`
+- `front-end/` should target XRPL network id `1256`
+- mock board fallback should stay disabled by default unless explicitly enabled for demo purposes
 
 ## Architecture overview
 
