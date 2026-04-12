@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CheckCircle2, Loader2, Wallet, ExternalLink } from "lucide-react";
 import { useWallet } from "@/contexts/WalletContext";
@@ -32,10 +32,16 @@ export default function WritePage() {
   const [expirySeconds, setExpirySeconds] = useState(EXPIRIES[2].seconds);
   const [optionType, setOptionType] = useState<OptionType>(WRITER_DEFAULTS.optionType);
   const [createState, setCreateState] = useState<CreateState>({ status: "idle" });
+  const [clientNow, setClientNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    setClientNow(Math.floor(Date.now() / 1000));
+  }, []);
 
   const derived = useMemo(() => {
+    if (clientNow === null) return null;
     try {
-      const nowUnix = Math.floor(Date.now() / 1000);
+      const nowUnix = clientNow;
       const cancelAfterUnix = nowUnix + expirySeconds;
       const data = encodeEscrowDataV1({ strikeUsd, expirySeconds, optionType });
       return {
@@ -49,7 +55,7 @@ export default function WritePage() {
     } catch {
       return null;
     }
-  }, [collateralXrp, expirySeconds, optionType, strikeUsd]);
+  }, [clientNow, collateralXrp, expirySeconds, optionType, strikeUsd]);
 
   const handlePrepare = () => {
     if (walletState.status !== "connected") {
@@ -229,7 +235,7 @@ export default function WritePage() {
               <div className="font-mono text-sm text-brand-text/80">{derived.cancelAfterRipple}</div>
 
               <div className="text-xs text-brand-text/40">FinishFunction</div>
-              <div className="text-xs text-brand-text/50 break-all">{FINISH_FUNCTION_PLACEHOLDER}</div>
+              <div className="text-xs text-brand-text/50 break-all font-mono">{FINISH_FUNCTION_PLACEHOLDER.length > 20 ? `${FINISH_FUNCTION_PLACEHOLDER.slice(0, 10)}…${FINISH_FUNCTION_PLACEHOLDER.slice(-10)}` : FINISH_FUNCTION_PLACEHOLDER}</div>
 
               <pre className="mt-2 bg-white/[0.03] rounded-xl p-4 text-xs text-brand-text/70 overflow-x-auto">{JSON.stringify({
                 TransactionType: "EscrowCreate",
