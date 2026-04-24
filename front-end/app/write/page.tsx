@@ -8,7 +8,7 @@ import { encodeEscrowDataV1, unixToRippleTime, WRITER_DEFAULTS, XRPL_DEFAULTS, x
 
 const GROTH5_WSS = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
 const XRPL_EXPLORER = process.env.NEXT_PUBLIC_XRPL_EXPLORER || "http://custom.xrpl.org/groth5.devnet.rippletest.net";
-const FINISH_FUNCTION_PLACEHOLDER = process.env.NEXT_PUBLIC_FINISH_FUNCTION_HEX || "<HEX_ENCODED_WASM>";
+const FINISH_FUNCTION_PLACEHOLDER = (process.env.NEXT_PUBLIC_FINISH_FUNCTION_HEX || "<HEX_ENCODED_WASM>").trim();
 
 const EXPIRIES = [
   { label: "1 Day", seconds: 86_400 },
@@ -101,6 +101,7 @@ export default function WritePage() {
 
     try {
       if (walletState.wallet === "otsu") {
+        console.log("[EscrowCreate] tx to sign:", JSON.stringify(tx, null, 2));
         const provider = (window as any).xrpl;
         const signed = await provider.signAndSubmit(tx);
         console.log("[EscrowCreate] Otsu signed:", JSON.stringify(signed, null, 2));

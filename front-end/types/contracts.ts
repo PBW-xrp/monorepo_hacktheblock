@@ -10,8 +10,8 @@ export type WriteFormValues = {
 
 export const XRPL_DEFAULTS = {
   networkId: 1256,
-  writerAddress: process.env.NEXT_PUBLIC_DEFAULT_WRITER_ADDRESS || "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe",
-  buyerAddress: process.env.NEXT_PUBLIC_DEFAULT_BUYER_ADDRESS || "r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr",
+  writerAddress: (process.env.NEXT_PUBLIC_DEFAULT_WRITER_ADDRESS || "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe").trim(),
+  buyerAddress: (process.env.NEXT_PUBLIC_DEFAULT_BUYER_ADDRESS || "r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr").trim(),
 };
 
 export const WRITER_DEFAULTS = {
