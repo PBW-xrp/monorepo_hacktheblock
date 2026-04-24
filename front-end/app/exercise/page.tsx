@@ -10,7 +10,8 @@ import { XRPL_DEFAULTS } from "@/types/contracts";
 const XRPL_EXPLORER = process.env.NEXT_PUBLIC_XRPL_EXPLORER || "http://custom.xrpl.org/groth5.devnet.rippletest.net";
 const GROTH5_WSS = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
 const DEFAULT_OWNER = XRPL_DEFAULTS.writerAddress;
-const DEFAULT_JOURNAL = "c05c150000000000308c110000000000cc100000008d2700000000000100000090d003000000000001000000";
+const DEFAULT_JOURNAL = process.env.NEXT_PUBLIC_DEFAULT_JOURNAL || "c05c150000000000308c110000000000cc100000008d2700000000000100000090d003000000000001000000";
+const DEFAULT_SEAL = process.env.NEXT_PUBLIC_DEFAULT_SEAL || "";
 
 type ExerciseState =
   | { status: "idle" }
@@ -25,7 +26,7 @@ function ExercisePageContent() {
   const [owner, setOwner] = useState(ownerFromQuery);
   const [offerSequence, setOfferSequence] = useState("");
   const [journalHex, setJournalHex] = useState(DEFAULT_JOURNAL);
-  const [sealHex, setSealHex] = useState("");
+  const [sealHex, setSealHex] = useState(DEFAULT_SEAL);
   const [exerciseState, setExerciseState] = useState<ExerciseState>({ status: "idle" });
 
   const txPreview = useMemo(() => ({
@@ -58,7 +59,6 @@ function ExercisePageContent() {
       TransactionType: "EscrowFinish",
       Owner: owner,
       OfferSequence: Number(offerSequence),
-      ComputationAllowance: 1000000,
       Memos: [
         { Memo: { MemoData: journalHex } },
         { Memo: { MemoData: sealHex } },
@@ -71,17 +71,54 @@ function ExercisePageContent() {
     try {
       if (walletState.wallet === "otsu") {
         const provider = (window as any).xrpl;
-        const result = await provider.signAndSubmit(tx);
-        const txHash = result?.hash || "confirmed";
-        setExerciseState({ status: "success", txHash });
+        const signed = await provider.signAndSubmit(tx);
+        console.log("[EscrowFinish] Otsu signed:", JSON.stringify(signed, null, 2));
+
+        const txBlob = signed?.tx_blob || signed?.result?.tx_blob;
+        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
+
+        // Compute tx hash from blob using WebCrypto (avoids double-submit)
+        const prefix = new Uint8Array([0x54, 0x58, 0x4e, 0x00]);
+        const txBytes = new Uint8Array((txBlob.match(/.{2}/g) as string[]).map((b: string) => parseInt(b, 16)));
+        const data = new Uint8Array(prefix.length + txBytes.length);
+        data.set(prefix);
+        data.set(txBytes, prefix.length);
+        const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+        const txHash = Array.from(new Uint8Array(hashBuffer).slice(0, 32))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
+          .toUpperCase();
+
+        // Wait for ledger inclusion then verify
+        await new Promise((r) => setTimeout(r, 5000));
+        const { Client } = await import("xrpl");
+        const wss = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
+        const client = new Client(wss);
+        await client.connect();
+        try {
+          const txRes = await client.request({ command: "tx", transaction: txHash });
+          console.log("[EscrowFinish] Tx result:", JSON.stringify(txRes, null, 2));
+          const txResult = (txRes?.result as any)?.meta?.TransactionResult;
+          if (txResult && txResult !== "tesSUCCESS") {
+            throw new Error(`Transaction failed: ${txResult}`);
+          }
+          setExerciseState({ status: "success", txHash });
+        } finally {
+          await client.disconnect();
+        }
         return;
       }
 
       if (walletState.wallet === "crossmark") {
         const { default: sdk } = await import("@crossmarkio/sdk");
         const result = await sdk.methods.signAndSubmitAndWait({ ...tx, Account: walletState.address } as any);
-        const data = result?.response?.data as any;
-        const txHash = data?.resp?.result?.hash || data?.resp?.hash || data?.hash || "confirmed";
+        console.log("[EscrowFinish] Crossmark result:", JSON.stringify(result, null, 2));
+        const cmData = result?.response?.data as any;
+        const engineResult = cmData?.resp?.result?.meta?.TransactionResult;
+        if (engineResult && engineResult !== "tesSUCCESS") {
+          throw new Error(`Transaction failed: ${engineResult}`);
+        }
+        const txHash = cmData?.resp?.result?.hash || cmData?.resp?.hash || cmData?.hash || "confirmed";
         setExerciseState({ status: "success", txHash });
         return;
       }

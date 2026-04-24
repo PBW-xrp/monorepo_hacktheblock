@@ -26,12 +26,12 @@ type OptionsResponse = {
 };
 
 const REFRESH_INTERVAL = 15_000;
-const SPOT_PRICE = 1.40;
 
 export default function BoardPage() {
   const [data, setData] = useState<OptionsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [spotPrice, setSpotPrice] = useState<number>(2.09);
   const [filter, setFilter] = useState<"ALL" | "CALL" | "PUT">("ALL");
   const [refreshing, setRefreshing] = useState(false);
 
@@ -55,6 +55,10 @@ export default function BoardPage() {
 
   useEffect(() => {
     fetchOptions();
+    fetch("https://api.coingecko.com/api/v3/simple/price?ids=ripple&vs_currencies=usd")
+      .then((r) => r.json())
+      .then((d) => { if (d?.ripple?.usd) setSpotPrice(d.ripple.usd); })
+      .catch(() => {});
     const timer = setInterval(() => fetchOptions(true), REFRESH_INTERVAL);
     return () => clearInterval(timer);
   }, [fetchOptions]);
@@ -113,7 +117,7 @@ export default function BoardPage() {
               Option Board
             </h1>
             <p className="text-brand-text/50 text-sm">
-              Live escrows on XRPL groth5 devnet · spot ${SPOT_PRICE.toFixed(2)}
+              Live escrows on XRPL groth5 devnet · spot ${spotPrice.toFixed(2)}
               {data?.isMock && (
                 <span className="ml-2 text-[10px] uppercase tracking-wider text-brand-purple/70 bg-brand-purple/10 border border-brand-purple/20 rounded px-1.5 py-0.5">
                   demo data
@@ -230,7 +234,7 @@ export default function BoardPage() {
                 key={opt.id}
                 {...opt}
                 index={i}
-                spot={SPOT_PRICE}
+                spot={spotPrice}
               />
             ))}
           </div>

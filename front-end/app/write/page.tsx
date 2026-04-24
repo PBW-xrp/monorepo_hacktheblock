@@ -26,7 +26,7 @@ type CreateState =
 
 export default function WritePage() {
   const { state: walletState } = useWallet();
-  const [buyerAddress, setBuyerAddress] = useState(XRPL_DEFAULTS.buyerAddress);
+  const [buyerAddress, setBuyerAddress] = useState(XRPL_DEFAULTS.writerAddress);
   const [collateralXrp, setCollateralXrp] = useState(WRITER_DEFAULTS.collateralXrp);
   const [strikeUsd, setStrikeUsd] = useState(WRITER_DEFAULTS.strikeUsd);
   const [expirySeconds, setExpirySeconds] = useState(EXPIRIES[2].seconds);
@@ -102,16 +102,53 @@ export default function WritePage() {
     try {
       if (walletState.wallet === "otsu") {
         const provider = (window as any).xrpl;
-        const result = await provider.signAndSubmit(tx);
-        const txHash = result?.hash || "confirmed";
-        setCreateState({ status: "success", txHash });
+        const signed = await provider.signAndSubmit(tx);
+        console.log("[EscrowCreate] Otsu signed:", JSON.stringify(signed, null, 2));
+
+        const txBlob = signed?.tx_blob || signed?.result?.tx_blob;
+        if (!txBlob) throw new Error("Otsu did not return a signed tx_blob.");
+
+        // Compute tx hash from blob using WebCrypto (avoids double-submit)
+        const prefix = new Uint8Array([0x54, 0x58, 0x4e, 0x00]);
+        const txBytes = new Uint8Array((txBlob.match(/.{2}/g) as string[]).map((b: string) => parseInt(b, 16)));
+        const data = new Uint8Array(prefix.length + txBytes.length);
+        data.set(prefix);
+        data.set(txBytes, prefix.length);
+        const hashBuffer = await crypto.subtle.digest("SHA-512", data);
+        const txHash = Array.from(new Uint8Array(hashBuffer).slice(0, 32))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
+          .toUpperCase();
+
+        // Wait for ledger inclusion then verify
+        await new Promise((r) => setTimeout(r, 5000));
+        const { Client } = await import("xrpl");
+        const wss = process.env.NEXT_PUBLIC_XRPL_WSS || "wss://groth5.devnet.rippletest.net:51233";
+        const client = new Client(wss);
+        await client.connect();
+        try {
+          const txRes = await client.request({ command: "tx", transaction: txHash });
+          console.log("[EscrowCreate] Tx result:", JSON.stringify(txRes, null, 2));
+          const txResult = (txRes?.result as any)?.meta?.TransactionResult;
+          if (txResult && txResult !== "tesSUCCESS") {
+            throw new Error(`Transaction failed: ${txResult}`);
+          }
+          setCreateState({ status: "success", txHash });
+        } finally {
+          await client.disconnect();
+        }
         return;
       }
 
       if (walletState.wallet === "crossmark") {
         const { default: sdk } = await import("@crossmarkio/sdk");
         const result = await sdk.methods.signAndSubmitAndWait({ ...tx, Account: walletState.address } as any);
+        console.log("[EscrowCreate] Crossmark result:", JSON.stringify(result, null, 2));
         const data = result?.response?.data as any;
+        const engineResult = data?.resp?.result?.meta?.TransactionResult;
+        if (engineResult && engineResult !== "tesSUCCESS") {
+          throw new Error(`Transaction failed: ${engineResult}`);
+        }
         const txHash = data?.resp?.result?.hash || data?.resp?.hash || data?.hash || "confirmed";
         setCreateState({ status: "success", txHash });
         return;

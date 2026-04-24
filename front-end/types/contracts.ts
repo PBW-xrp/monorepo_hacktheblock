@@ -10,14 +10,13 @@ export type WriteFormValues = {
 
 export const XRPL_DEFAULTS = {
   networkId: 1256,
-  premiumDrops: "5000000",
   writerAddress: process.env.NEXT_PUBLIC_DEFAULT_WRITER_ADDRESS || "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe",
   buyerAddress: process.env.NEXT_PUBLIC_DEFAULT_BUYER_ADDRESS || "r8D5rp5cn2hkemoLKvoEJFNZ73Mp2Mcgr",
 };
 
 export const WRITER_DEFAULTS = {
-  collateralDrops: "100000000",
-  collateralXrp: "100",
+  collateralDrops: "20000000",
+  collateralXrp: "20",
   strikeFixedPoint: 1_150_000,
   strikeUsd: "1.15",
   optionType: "CALL" as OptionType,

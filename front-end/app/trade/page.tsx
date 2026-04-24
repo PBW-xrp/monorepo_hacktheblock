@@ -26,11 +26,8 @@ const PayoffSurface3D = dynamic(() => import("@/components/PayoffSurface3D"), {
 });
 
 // ---------------------------------------------------------------------------
-// Config — hardcoded values from team (April 11 2026)
 // ---------------------------------------------------------------------------
-const SPOT_PRICE     = 1.40;   // XRP/USD
 const DEFAULT_STRIKE = "1.15"; // $1.15
-const PREMIUM_DROPS  = "5000000"; // 5 XRP fixed for demo
 const XRPL_EXPLORER  = "http://custom.xrpl.org/groth5.devnet.rippletest.net";
 
 // ---------------------------------------------------------------------------
@@ -114,6 +111,7 @@ export default function TradePage() {
   >({ status: "idle" });
 
   const [buyState, setBuyState] = useState<BuyState>({ status: "idle" });
+  const [liveSpot, setLiveSpot] = useState<number | null>(null);
   const [expiryOpen, setExpiryOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -149,6 +147,7 @@ export default function TradePage() {
       if (!res.ok) throw new Error("Quote request failed.");
       const quote: QuoteResponse = await res.json();
       setQuoteState({ status: "success", quote, intent });
+      setLiveSpot(quote.spotPrice);
     } catch (err) {
       setQuoteState({
         status: "error",
@@ -164,14 +163,15 @@ export default function TradePage() {
       setBuyState({ status: "error", message: "Connect a wallet first." });
       return;
     }
-    const { intent } = quoteState;
+    const { intent, quote } = quoteState;
+    const premiumDrops = String(Math.ceil(quote.totalPremiumXRP * 1_000_000));
     const memoData = toHex(JSON.stringify(intent));
     const memoType = toHex("application/json");
     const tx = {
       TransactionType: "Payment",
-      Amount: PREMIUM_DROPS,
-      Destination: "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe", // groth5 faucet wallet (always active)
-      NetworkID: 1256, // required for groth5 devnet
+      Amount: premiumDrops,
+      Destination: "rht5xsioM3iix1hx4i2zJX2WJ1JDTwLGJe",
+      NetworkID: 1256,
       Memos: [{ Memo: { MemoType: memoType, MemoData: memoData } }],
     };
 
@@ -282,8 +282,8 @@ export default function TradePage() {
                 <p className="text-xs text-brand-text/40">XRPL · groth5 Devnet</p>
               </div>
               <div className="ml-auto text-right">
-                <p className="font-mono text-brand-cyan font-semibold">${SPOT_PRICE.toFixed(2)}</p>
-                <p className="text-xs text-brand-text/30">Oracle spot</p>
+                <p className="font-mono text-brand-cyan font-semibold">{liveSpot ? `$${liveSpot.toFixed(2)}` : "…"}</p>
+                <p className="text-xs text-brand-text/30">Live spot (CoinGecko)</p>
               </div>
             </div>
           </div>
@@ -346,8 +346,8 @@ export default function TradePage() {
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-brand-text/30 font-mono">USD</span>
               </div>
               <p className="text-xs text-brand-text/30">
-                Spot: ${SPOT_PRICE.toFixed(2)} ·{" "}
-                {parseFloat(form.strike) > SPOT_PRICE
+                Spot: ${(liveSpot ?? 0).toFixed(2)} ·{" "}
+                {parseFloat(form.strike) > (liveSpot ?? 0)
                   ? form.isPut ? "ITM Put" : "OTM Call"
                   : form.isPut ? "OTM Put" : "ITM Call"}
               </p>
@@ -445,7 +445,7 @@ export default function TradePage() {
               <div className="flex flex-col gap-2">
                 <p className="text-xs font-semibold uppercase tracking-widest text-brand-text/40 px-1">Payoff Surface</p>
                 <PayoffSurface3D
-                  spot={SPOT_PRICE}
+                  spot={(liveSpot ?? 0)}
                   strike={parseFloat(form.strike)}
                   isPut={form.isPut}
                   premium={quoteState.quote.priceBS}

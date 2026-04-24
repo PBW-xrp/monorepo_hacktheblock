@@ -2,9 +2,29 @@ import { NextResponse } from "next/server";
 import type { IntentV1 } from "@/types/intent";
 
 // ---------------------------------------------------------------------------
+// Live XRP spot price from CoinGecko (cached 60s)
+// ---------------------------------------------------------------------------
+let cachedSpot: { price: number; ts: number } | null = null;
+
+async function getXrpSpot(): Promise<number> {
+  if (cachedSpot && Date.now() - cachedSpot.ts < 60_000) return cachedSpot.price;
+  try {
+    const res = await fetch(
+      "https://api.coingecko.com/api/v3/simple/price?ids=ripple&vs_currencies=usd",
+      { next: { revalidate: 60 } }
+    );
+    const data = await res.json();
+    const price = data?.ripple?.usd;
+    if (typeof price === "number" && price > 0) {
+      cachedSpot = { price, ts: Date.now() };
+      return price;
+    }
+  } catch {}
+  return cachedSpot?.price ?? 2.09; // fallback to recent known price
+}
+
+// ---------------------------------------------------------------------------
 // Black-Scholes pricing engine
-// Reference values from team:
-//   spot = $1.40, vol = 43%, rate = 0%, expiry = 30d → price ≈ $0.25
 // ---------------------------------------------------------------------------
 
 function blackScholes(
@@ -39,13 +59,13 @@ export async function POST(req: Request) {
   try {
     const body: IntentV1 = await req.json();
 
-    const S = 1.40;       // XRP/USD spot price (hardcoded — in prod: on-chain oracle)
+    const S = await getXrpSpot();
     const K = parseFloat(body.strike);
     const amount = parseFloat(body.amount);
     const now = Math.floor(Date.now() / 1000);
     const T = Math.max(0, (body.expiry - now) / (365 * 24 * 3600));
-    const r = 0;           // risk-free rate = 0
-    const sigma = 0.43;   // 43% annualized vol (4300 bps)
+    const r = 0;           // risk-free rate ≈ 0 for crypto
+    const sigma = 0.43;   // 43% annualized vol — TODO: derive from historical data
 
     const bsPrice = blackScholes(S, K, T, r, sigma, body.isPut);
 
